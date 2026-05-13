@@ -9,7 +9,15 @@ import '../utils/currency_formatter.dart';
 
 class EditExpenseScreen extends StatefulWidget {
   final Expense expense;
-  const EditExpenseScreen({super.key, required this.expense});
+  final bool isFromPending;
+  final String? pendingId;
+
+  const EditExpenseScreen({
+    super.key,
+    required this.expense,
+    this.isFromPending = false,
+    this.pendingId,
+  });
 
   @override
   State<EditExpenseScreen> createState() => _EditExpenseScreenState();
@@ -45,10 +53,12 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
   @override
   void initState() {
     super.initState();
-    _amountController =
-        TextEditingController(text: widget.expense.amount.toStringAsFixed(2));
-    _descriptionController =
-        TextEditingController(text: widget.expense.description);
+    _amountController = TextEditingController(
+      text: widget.expense.amount.toStringAsFixed(2),
+    );
+    _descriptionController = TextEditingController(
+      text: widget.expense.description,
+    );
     _selectedCategory = widget.expense.category;
     _selectedDate = widget.expense.date;
   }
@@ -86,11 +96,13 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
                   : 'Categorized as: ${result.category} (rule-based)',
               style: GoogleFonts.poppins(),
             ),
-            backgroundColor:
-                result.isAI ? const Color(0xFF845EF7) : const Color(0xFF00C9A7),
+            backgroundColor: result.isAI
+                ? const Color(0xFF845EF7)
+                : const Color(0xFF00C9A7),
             behavior: SnackBarBehavior.floating,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
           ),
         );
       }
@@ -99,8 +111,7 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
       setState(() => _isRecategorizing = false);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content:
-              Text('Could not categorize', style: GoogleFonts.poppins()),
+          content: Text('Could not categorize', style: GoogleFonts.poppins()),
           backgroundColor: const Color(0xFFCF6679),
           behavior: SnackBarBehavior.floating,
         ),
@@ -124,7 +135,8 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
               onSurface: Colors.white,
             ),
             dialogTheme: const DialogThemeData(
-                backgroundColor: Color(0xFF121212)),
+              backgroundColor: Color(0xFF121212),
+            ),
           ),
           child: child!,
         );
@@ -149,13 +161,24 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
         date: _selectedDate,
       );
 
-      await _firestoreService.updateExpense(user.uid, updated);
+      if (widget.isFromPending && widget.pendingId != null) {
+        // We are approving a pending transaction
+        await _firestoreService.approvePendingTransaction(
+          user.uid,
+          widget.pendingId!,
+          updated,
+        );
+      } else {
+        // We are editing an existing expense
+        await _firestoreService.updateExpense(user.uid, updated);
+      }
+
       if (mounted) Navigator.pop(context, true);
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error updating expense: $e'),
+            content: Text('Error saving expense: $e'),
             backgroundColor: const Color(0xFFCF6679),
             behavior: SnackBarBehavior.floating,
           ),
@@ -171,8 +194,10 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFF121212),
       appBar: AppBar(
-        title: Text('Edit Expense',
-            style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
+        title: Text(
+          widget.isFromPending ? 'Approve Expense' : 'Edit Expense',
+          style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+        ),
         backgroundColor: const Color(0xFF121212),
         elevation: 0,
         leading: IconButton(
@@ -188,25 +213,32 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Amount
-              Text('Amount',
-                  style: GoogleFonts.poppins(
-                      color: const Color(0xFF9E9E9E), fontSize: 13)),
+              Text(
+                'Amount',
+                style: GoogleFonts.poppins(
+                  color: const Color(0xFF9E9E9E),
+                  fontSize: 13,
+                ),
+              ),
               const SizedBox(height: 8),
               TextFormField(
                 controller: _amountController,
-                keyboardType:
-                    const TextInputType.numberWithOptions(decimal: true),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
                 inputFormatters: [CurrencyInputFormatter()],
                 style: GoogleFonts.poppins(
-                    color: Colors.white,
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold),
+                  color: Colors.white,
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                ),
                 decoration: InputDecoration(
                   prefixText: 'LKR ',
                   prefixStyle: GoogleFonts.poppins(
-                      color: const Color(0xFF00C9A7),
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold),
+                    color: const Color(0xFF00C9A7),
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                  ),
                   filled: true,
                   fillColor: const Color(0xFF1E1E1E),
                   border: OutlineInputBorder(
@@ -216,7 +248,9 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(16),
                     borderSide: const BorderSide(
-                        color: Color(0xFF00C9A7), width: 1.5),
+                      color: Color(0xFF00C9A7),
+                      width: 1.5,
+                    ),
                   ),
                 ),
                 validator: (val) {
@@ -234,9 +268,13 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
               const SizedBox(height: 28),
 
               // Description
-              Text('Description',
-                  style: GoogleFonts.poppins(
-                      color: const Color(0xFF9E9E9E), fontSize: 13)),
+              Text(
+                'Description',
+                style: GoogleFonts.poppins(
+                  color: const Color(0xFF9E9E9E),
+                  fontSize: 13,
+                ),
+              ),
               const SizedBox(height: 8),
               TextFormField(
                 controller: _descriptionController,
@@ -244,7 +282,8 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
                 decoration: InputDecoration(
                   hintText: 'e.g. Uber ride to office',
                   hintStyle: GoogleFonts.poppins(
-                      color: const Color(0xFF616161)),
+                    color: const Color(0xFF616161),
+                  ),
                   filled: true,
                   fillColor: const Color(0xFF1E1E1E),
                   border: OutlineInputBorder(
@@ -254,7 +293,9 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
                     borderSide: const BorderSide(
-                        color: Color(0xFF00C9A7), width: 1.5),
+                      color: Color(0xFF00C9A7),
+                      width: 1.5,
+                    ),
                   ),
                 ),
                 validator: (val) {
@@ -265,12 +306,13 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
                 },
               ),
 
-              // AI re-categorize indicator
               if (_aiRecategorized) ...[
                 const SizedBox(height: 8),
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: const Color(0xFF845EF7).withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
@@ -278,8 +320,11 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.auto_awesome,
-                          size: 14, color: Color(0xFF845EF7)),
+                      const Icon(
+                        Icons.auto_awesome,
+                        size: 14,
+                        color: Color(0xFF845EF7),
+                      ),
                       const SizedBox(width: 6),
                       Text(
                         'AI re-categorized as "$_selectedCategory" (${(_confidence * 100).toInt()}%)',
@@ -295,7 +340,6 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
               ],
               const SizedBox(height: 12),
 
-              // Re-categorize with AI button
               SizedBox(
                 height: 36,
                 child: OutlinedButton.icon(
@@ -307,31 +351,41 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
                           child: CircularProgressIndicator(
                             strokeWidth: 1.5,
                             color: const Color(0xFF845EF7),
-                            backgroundColor:
-                                const Color(0xFF845EF7).withValues(alpha: 0.2),
+                            backgroundColor: const Color(
+                              0xFF845EF7,
+                            ).withValues(alpha: 0.2),
                           ),
                         )
                       : const Icon(Icons.auto_awesome, size: 16),
                   label: Text(
-                    _isRecategorizing ? 'Categorizing...' : 'Re-categorize with AI',
+                    _isRecategorizing
+                        ? 'Categorizing...'
+                        : 'Re-categorize with AI',
                     style: GoogleFonts.poppins(
-                        fontSize: 12, fontWeight: FontWeight.w500),
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: const Color(0xFF845EF7),
                     side: BorderSide(
-                        color: const Color(0xFF845EF7).withValues(alpha: 0.4)),
+                      color: const Color(0xFF845EF7).withValues(alpha: 0.4),
+                    ),
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10)),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                   ),
                 ),
               ),
               const SizedBox(height: 20),
 
-              // Category
-              Text('Category',
-                  style: GoogleFonts.poppins(
-                      color: const Color(0xFF9E9E9E), fontSize: 13)),
+              Text(
+                'Category',
+                style: GoogleFonts.poppins(
+                  color: const Color(0xFF9E9E9E),
+                  fontSize: 13,
+                ),
+              ),
               const SizedBox(height: 12),
               Wrap(
                 spacing: 10,
@@ -346,7 +400,9 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 200),
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 10),
+                        horizontal: 16,
+                        vertical: 10,
+                      ),
                       decoration: BoxDecoration(
                         color: isSelected
                             ? const Color(0xFF00C9A7)
@@ -356,21 +412,26 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(_categoryIcons[cat] ?? Icons.circle,
-                              size: 16,
+                          Icon(
+                            _categoryIcons[cat] ?? Icons.circle,
+                            size: 16,
+                            color: isSelected
+                                ? Colors.white
+                                : const Color(0xFF9E9E9E),
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            cat,
+                            style: GoogleFonts.poppins(
                               color: isSelected
                                   ? Colors.white
-                                  : const Color(0xFF9E9E9E)),
-                          const SizedBox(width: 6),
-                          Text(cat,
-                              style: GoogleFonts.poppins(
-                                  color: isSelected
-                                      ? Colors.white
-                                      : const Color(0xFF9E9E9E),
-                                  fontSize: 13,
-                                  fontWeight: isSelected
-                                      ? FontWeight.w600
-                                      : FontWeight.normal)),
+                                  : const Color(0xFF9E9E9E),
+                              fontSize: 13,
+                              fontWeight: isSelected
+                                  ? FontWeight.w600
+                                  : FontWeight.normal,
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -379,30 +440,40 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
               ),
               const SizedBox(height: 28),
 
-              // Date
-              Text('Date',
-                  style: GoogleFonts.poppins(
-                      color: const Color(0xFF9E9E9E), fontSize: 13)),
+              Text(
+                'Date',
+                style: GoogleFonts.poppins(
+                  color: const Color(0xFF9E9E9E),
+                  fontSize: 13,
+                ),
+              ),
               const SizedBox(height: 8),
               GestureDetector(
                 onTap: _pickDate,
                 child: Container(
                   width: double.infinity,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 16,
+                  ),
                   decoration: BoxDecoration(
                     color: const Color(0xFF1E1E1E),
                     borderRadius: BorderRadius.circular(14),
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.calendar_today_rounded,
-                          color: Color(0xFF9E9E9E), size: 20),
+                      const Icon(
+                        Icons.calendar_today_rounded,
+                        color: Color(0xFF9E9E9E),
+                        size: 20,
+                      ),
                       const SizedBox(width: 12),
                       Text(
                         DateFormat('EEEE, MMM d, y').format(_selectedDate),
                         style: GoogleFonts.poppins(
-                            color: Colors.white, fontSize: 14),
+                          color: Colors.white,
+                          fontSize: 14,
+                        ),
                       ),
                     ],
                   ),
@@ -410,7 +481,6 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
               ),
               const SizedBox(height: 40),
 
-              // Update Button
               SizedBox(
                 width: double.infinity,
                 height: 52,
@@ -426,7 +496,9 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
                           ),
                         )
                       : Text(
-                          'Update Expense',
+                          widget.isFromPending
+                              ? 'Save Expense'
+                              : 'Update Expense',
                           style: GoogleFonts.poppins(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,

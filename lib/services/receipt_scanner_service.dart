@@ -5,7 +5,6 @@ import 'package:flutter/foundation.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:image_picker/image_picker.dart';
 
-/// Result from AI-powered receipt analysis.
 class ReceiptAnalysisResult {
   final double? amount;
   final String? vendor;
@@ -29,7 +28,6 @@ class ReceiptScannerService {
   final _imagePicker = ImagePicker();
   static GenerativeModel? _model;
 
-  /// Lazily initialize the Gemini model for text-based receipt analysis
   static GenerativeModel get _geminiModel {
     _model ??= FirebaseAI.googleAI().generativeModel(
       model: 'gemini-2.5-flash-lite',
@@ -37,7 +35,6 @@ class ReceiptScannerService {
     return _model!;
   }
 
-  /// Pick an image from camera or gallery
   Future<File?> pickImage({required bool fromCamera}) async {
     final XFile? pickedFile = await _imagePicker.pickImage(
       source: fromCamera ? ImageSource.camera : ImageSource.gallery,
@@ -49,19 +46,13 @@ class ReceiptScannerService {
     return File(pickedFile.path);
   }
 
-  /// Extract text from an image file using ML Kit
   Future<String> extractText(File imageFile) async {
     final inputImage = InputImage.fromFile(imageFile);
     final recognizedText = await _textRecognizer.processImage(inputImage);
     return recognizedText.text;
   }
 
-  // ─── AI-Powered Receipt Analysis ──────────────────────────────────
-
-  /// Analyze a receipt: OCR first, then send text to Gemini for smart parsing.
-  /// Falls back to regex if AI fails.
   Future<ReceiptAnalysisResult> analyzeReceipt(File imageFile) async {
-    // Step 1: Extract text via ML Kit OCR
     final ocrText = await extractText(imageFile);
 
     if (ocrText.trim().isEmpty) {
@@ -73,7 +64,6 @@ class ReceiptScannerService {
       );
     }
 
-    // Step 2: Send OCR text to Gemini for intelligent parsing
     try {
       final result = await _analyzeTextWithAI(ocrText);
       if (result != null) return result;
@@ -81,7 +71,6 @@ class ReceiptScannerService {
       debugPrint('Receipt AI analysis failed: $e');
     }
 
-    // Step 3: Fallback to regex parsing
     return ReceiptAnalysisResult(
       amount: parseAmount(ocrText),
       vendor: parseVendorName(ocrText),
@@ -92,7 +81,6 @@ class ReceiptScannerService {
     );
   }
 
-  /// Send OCR-extracted text to Gemini for intelligent receipt parsing
   Future<ReceiptAnalysisResult?> _analyzeTextWithAI(String ocrText) async {
     final prompt = [
       Content.text(
@@ -106,7 +94,7 @@ class ReceiptScannerService {
         '$ocrText\n'
         '---\n\n'
         'Respond with ONLY valid JSON, no other text:\n'
-        '{"total_amount": <number_or_null>, "vendor": "<name_or_null>", "date": "<date_or_null>", "category": "<category>"}'
+        '{"total_amount": <number_or_null>, "vendor": "<name_or_null>", "date": "<date_or_null>", "category": "<category>"}',
       ),
     ];
 
@@ -120,13 +108,14 @@ class ReceiptScannerService {
     return _parseAIResponse(text, ocrText);
   }
 
-  /// Parse the JSON response from Gemini
   ReceiptAnalysisResult? _parseAIResponse(String text, String ocrText) {
     try {
       String cleaned = text;
-      // Strip markdown code fences if present
       if (cleaned.contains('```')) {
-        cleaned = cleaned.replaceAll(RegExp(r'```json\s*', caseSensitive: false), '');
+        cleaned = cleaned.replaceAll(
+          RegExp(r'```json\s*', caseSensitive: false),
+          '',
+        );
         cleaned = cleaned.replaceAll(RegExp(r'```\s*'), '');
         cleaned = cleaned.trim();
       }
@@ -140,14 +129,17 @@ class ReceiptScannerService {
       final date = json['date'] as String?;
       final category = json['category'] as String?;
 
-      // Validate we got at least something useful
       if (amount == null && vendor == null) return null;
 
       return ReceiptAnalysisResult(
         amount: amount,
-        vendor: (vendor != null && vendor.toLowerCase() != 'null') ? vendor : null,
+        vendor: (vendor != null && vendor.toLowerCase() != 'null')
+            ? vendor
+            : null,
         date: (date != null && date.toLowerCase() != 'null') ? date : null,
-        category: (category != null && category.toLowerCase() != 'null') ? category : null,
+        category: (category != null && category.toLowerCase() != 'null')
+            ? category
+            : null,
         rawText: ocrText,
         usedAI: true,
       );
@@ -157,13 +149,9 @@ class ReceiptScannerService {
     }
   }
 
-  // ─── Regex Fallback Methods ────────────────────────────────────────
-
-  /// Parse extracted text to find amount using keyword + regex matching
   double? parseAmount(String text) {
     final lines = text.split('\n');
 
-    // First pass: look for lines with total-related keywords
     for (final line in lines.reversed) {
       final lower = line.toLowerCase();
       if (lower.contains('total') ||
@@ -176,7 +164,6 @@ class ReceiptScannerService {
       }
     }
 
-    // Second pass: find the largest number (likely the total)
     double? largest;
     for (final line in lines) {
       final amount = _extractNumber(line);
@@ -190,14 +177,12 @@ class ReceiptScannerService {
     return largest;
   }
 
-  /// Parse vendor/store name (usually first non-empty line with letters)
   String? parseVendorName(String text) {
     final lines = text.split('\n');
     for (final line in lines) {
       final trimmed = line.trim();
       if (trimmed.isNotEmpty && trimmed.length > 2) {
-        final letterCount =
-            trimmed.replaceAll(RegExp(r'[^a-zA-Z]'), '').length;
+        final letterCount = trimmed.replaceAll(RegExp(r'[^a-zA-Z]'), '').length;
         if (letterCount > trimmed.length * 0.3) {
           return trimmed;
         }
@@ -206,7 +191,6 @@ class ReceiptScannerService {
     return null;
   }
 
-  /// Extract a number from a string
   double? _extractNumber(String text) {
     final regex = RegExp(r'[\d,]+\.?\d*');
     final matches = regex.allMatches(text);
@@ -224,8 +208,134 @@ class ReceiptScannerService {
     return largest;
   }
 
-  /// Clean up resources
+  static Future<TransactionParseResult?> parseTransactionSMS(
+    String smsBody,
+  ) async {
+    try {
+      final prompt = [
+        Content.text(
+          'You are a bank SMS parser. Analyze this SMS message and extract transaction details.\n'
+          '1. amount - the transaction amount (number only, no currency symbols)\n'
+          '2. vendor - merchant/store name if mentioned\n'
+          '3. card_last4 - last 4 digits of card if mentioned\n'
+          '4. category - one of: Food, Transport, Entertainment, Utilities, Shopping, Health, Education, Other\n\n'
+          'SMS text:\n'
+          '---\n'
+          '$smsBody\n'
+          '---\n\n'
+          'Respond with ONLY valid JSON, no other text:\n'
+          '{"amount": <number_or_null>, "vendor": "<name_or_null>", "card_last4": "<digits_or_null>", "category": "<category>"}',
+        ),
+      ];
+
+      final response = await _geminiModel
+          .generateContent(prompt)
+          .timeout(const Duration(seconds: 10));
+
+      final text = response.text?.trim() ?? '';
+      if (text.isEmpty) return null;
+
+      return _parseSmsAIResponse(text, smsBody);
+    } catch (e) {
+      debugPrint('SMS AI parse failed: $e');
+    }
+
+    return _parseSmsFallback(smsBody);
+  }
+
+  static TransactionParseResult? _parseSmsAIResponse(
+    String text,
+    String smsBody,
+  ) {
+    try {
+      String cleaned = text;
+      if (cleaned.contains('```')) {
+        cleaned = cleaned.replaceAll(
+          RegExp(r'```json\s*', caseSensitive: false),
+          '',
+        );
+        cleaned = cleaned.replaceAll(RegExp(r'```\s*'), '');
+        cleaned = cleaned.trim();
+      }
+
+      final json = jsonDecode(cleaned) as Map<String, dynamic>;
+
+      final amount = json['amount'] != null
+          ? (json['amount'] as num).toDouble()
+          : null;
+      if (amount == null || amount <= 0) return null;
+
+      final vendor = json['vendor'] as String?;
+      final cardLast4 = json['card_last4'] as String?;
+      final category = json['category'] as String?;
+
+      return TransactionParseResult(
+        amount: amount,
+        vendor: (vendor != null && vendor.toLowerCase() != 'null')
+            ? vendor
+            : null,
+        cardLast4: (cardLast4 != null && cardLast4.toLowerCase() != 'null')
+            ? cardLast4
+            : null,
+        category: (category != null && category.toLowerCase() != 'null')
+            ? category
+            : 'Other',
+        rawSms: smsBody,
+      );
+    } catch (e) {
+      debugPrint('SMS AI JSON parse failed: $e');
+      return null;
+    }
+  }
+
+  static TransactionParseResult? _parseSmsFallback(String smsBody) {
+    final amountRegex = RegExp(
+      r'(?:LKR|Rs\.?|USD|EUR)\s*([0-9,]+\.?\d*)',
+      caseSensitive: false,
+    );
+    final match = amountRegex.firstMatch(smsBody);
+    if (match == null) return null;
+
+    final amountStr = match.group(1)?.replaceAll(',', '');
+    final amount = double.tryParse(amountStr ?? '');
+    if (amount == null || amount <= 0) return null;
+
+    String? cardLast4;
+    final cardRegex = RegExp(
+      r'(?:ending|card|xx|xxxx|••••)\s*(\d{4})',
+      caseSensitive: false,
+    );
+    final cardMatch = cardRegex.firstMatch(smsBody);
+    if (cardMatch != null) {
+      cardLast4 = cardMatch.group(1);
+    }
+
+    return TransactionParseResult(
+      amount: amount,
+      vendor: null,
+      cardLast4: cardLast4,
+      category: 'Other',
+      rawSms: smsBody,
+    );
+  }
+
   void dispose() {
     _textRecognizer.close();
   }
+}
+
+class TransactionParseResult {
+  final double amount;
+  final String? vendor;
+  final String? cardLast4;
+  final String? category;
+  final String rawSms;
+
+  const TransactionParseResult({
+    required this.amount,
+    this.vendor,
+    this.cardLast4,
+    this.category,
+    required this.rawSms,
+  });
 }
