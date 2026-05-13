@@ -54,15 +54,21 @@ class _HomeScreenState extends State<HomeScreen> {
       builder: (ctx) => AlertDialog(
         backgroundColor: const Color(0xFF1E1E1E),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text('Delete Expense',
-            style: GoogleFonts.poppins(color: Colors.white)),
-        content: Text('Are you sure you want to delete this expense?',
-            style: GoogleFonts.poppins(color: const Color(0xFF9E9E9E))),
+        title: Text(
+          'Delete Expense',
+          style: GoogleFonts.poppins(color: Colors.white),
+        ),
+        content: Text(
+          'Are you sure you want to delete this expense?',
+          style: GoogleFonts.poppins(color: const Color(0xFF9E9E9E)),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text('Cancel',
-                style: GoogleFonts.poppins(color: const Color(0xFF9E9E9E))),
+            child: Text(
+              'Cancel',
+              style: GoogleFonts.poppins(color: const Color(0xFF9E9E9E)),
+            ),
           ),
           TextButton(
             onPressed: () async {
@@ -71,18 +77,23 @@ class _HomeScreenState extends State<HomeScreen> {
               if (mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text('Expense deleted',
-                        style: GoogleFonts.poppins()),
+                    content: Text(
+                      'Expense deleted',
+                      style: GoogleFonts.poppins(),
+                    ),
                     backgroundColor: const Color(0xFF00C9A7),
                     behavior: SnackBarBehavior.floating,
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10)),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                   ),
                 );
               }
             },
-            child: Text('Delete',
-                style: GoogleFonts.poppins(color: const Color(0xFFCF6679))),
+            child: Text(
+              'Delete',
+              style: GoogleFonts.poppins(color: const Color(0xFFCF6679)),
+            ),
           ),
         ],
       ),
@@ -90,35 +101,49 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _showSetIncomeDialog(
-      String userId, int year, int month, double currentIncome) {
-    final controller =
-        TextEditingController(text: currentIncome > 0 ? currentIncome.toStringAsFixed(2) : '');
+    String userId,
+    int year,
+    int month,
+    double currentIncome,
+  ) {
+    final controller = TextEditingController(
+      text: currentIncome > 0 ? currentIncome.toStringAsFixed(2) : '',
+    );
 
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: const Color(0xFF1E1E1E),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text('Set Monthly Income',
-            style: GoogleFonts.poppins(color: Colors.white, fontSize: 17)),
+        title: Text(
+          'Set Monthly Income',
+          style: GoogleFonts.poppins(color: Colors.white, fontSize: 17),
+        ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('Enter your income for this month',
-                style: GoogleFonts.poppins(
-                    color: const Color(0xFF9E9E9E), fontSize: 13)),
+            Text(
+              'Enter your income for this month',
+              style: GoogleFonts.poppins(
+                color: const Color(0xFF9E9E9E),
+                fontSize: 13,
+              ),
+            ),
             const SizedBox(height: 16),
             TextField(
               controller: controller,
-              keyboardType:
-                  const TextInputType.numberWithOptions(decimal: true),
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
               inputFormatters: [CurrencyInputFormatter()],
               autofocus: true,
               style: GoogleFonts.poppins(color: Colors.white, fontSize: 18),
               decoration: InputDecoration(
                 prefixText: 'LKR ',
                 prefixStyle: GoogleFonts.poppins(
-                    color: const Color(0xFF9E9E9E), fontSize: 18),
+                  color: const Color(0xFF9E9E9E),
+                  fontSize: 18,
+                ),
                 filled: true,
                 fillColor: const Color(0xFF2C2C2C),
                 border: OutlineInputBorder(
@@ -132,31 +157,44 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text('Cancel',
-                style: GoogleFonts.poppins(color: const Color(0xFF9E9E9E))),
+            child: Text(
+              'Cancel',
+              style: GoogleFonts.poppins(color: const Color(0xFF9E9E9E)),
+            ),
           ),
           TextButton(
             onPressed: () async {
-              final amount = double.tryParse(stripCommas(controller.text.trim()));
+              final amount = double.tryParse(
+                stripCommas(controller.text.trim()),
+              );
               if (amount == null || amount < 0) return;
               Navigator.pop(ctx);
               await _firestoreService.setMonthlyIncome(
-                  userId, year, month, amount);
+                userId,
+                year,
+                month,
+                amount,
+              );
               if (mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content:
-                        Text('Income updated', style: GoogleFonts.poppins()),
+                    content: Text(
+                      'Income updated',
+                      style: GoogleFonts.poppins(),
+                    ),
                     backgroundColor: const Color(0xFF00C9A7),
                     behavior: SnackBarBehavior.floating,
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10)),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                   ),
                 );
               }
             },
-            child: Text('Save',
-                style: GoogleFonts.poppins(color: const Color(0xFF00C9A7))),
+            child: Text(
+              'Save',
+              style: GoogleFonts.poppins(color: const Color(0xFF00C9A7)),
+            ),
           ),
         ],
       ),
@@ -183,10 +221,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
             final monthExpenses = allExpenses
                 .where(
-                    (e) => e.date.month == now.month && e.date.year == now.year)
+                  (e) => e.date.month == now.month && e.date.year == now.year,
+                )
                 .toList();
-            final totalThisMonth =
-                monthExpenses.fold<double>(0, (sum, e) => sum + e.amount);
+            final totalThisMonth = monthExpenses.fold<double>(
+              0,
+              (sum, e) => sum + e.amount,
+            );
             final expenseCount = monthExpenses.length;
 
             return CustomScrollView(
@@ -201,16 +242,20 @@ class _HomeScreenState extends State<HomeScreen> {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Welcome back,',
-                                style: GoogleFonts.poppins(
-                                    color: const Color(0xFF9E9E9E),
-                                    fontSize: 13)),
+                            Text(
+                              'Welcome back,',
+                              style: GoogleFonts.poppins(
+                                color: const Color(0xFF9E9E9E),
+                                fontSize: 13,
+                              ),
+                            ),
                             Text(
                               userEmail.split('@').first,
                               style: GoogleFonts.poppins(
-                                  color: Colors.white,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold),
+                                color: Colors.white,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ],
                         ),
@@ -221,14 +266,16 @@ class _HomeScreenState extends State<HomeScreen> {
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: IconButton(
-                            icon: const Icon(Icons.document_scanner_rounded,
-                                color: Color(0xFF00C9A7)),
+                            icon: const Icon(
+                              Icons.document_scanner_rounded,
+                              color: Color(0xFF00C9A7),
+                            ),
                             onPressed: () {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (_) =>
-                                        const ScanReceiptScreen()),
+                                  builder: (_) => const ScanReceiptScreen(),
+                                ),
                               );
                             },
                             tooltip: 'Scan Receipt',
@@ -239,13 +286,15 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
 
-                // Summary Card — Income / Expenses / Balance
                 SliverToBoxAdapter(
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
                     child: StreamBuilder<double>(
                       stream: _firestoreService.streamMonthlyIncome(
-                          userId, now.year, now.month),
+                        userId,
+                        now.year,
+                        now.month,
+                      ),
                       builder: (context, incomeSnap) {
                         final income = incomeSnap.data ?? 0;
                         final balance = income - totalThisMonth;
@@ -262,15 +311,19 @@ class _HomeScreenState extends State<HomeScreen> {
                               Text(
                                 'This Month',
                                 style: GoogleFonts.poppins(
-                                    color: const Color(0xFF9E9E9E),
-                                    fontSize: 13),
+                                  color: const Color(0xFF9E9E9E),
+                                  fontSize: 13,
+                                ),
                               ),
                               const SizedBox(height: 16),
 
-                              // Income row
                               InkWell(
                                 onTap: () => _showSetIncomeDialog(
-                                    userId, now.year, now.month, income),
+                                  userId,
+                                  now.year,
+                                  now.month,
+                                  income,
+                                ),
                                 borderRadius: BorderRadius.circular(12),
                                 child: Row(
                                   children: [
@@ -278,68 +331,80 @@ class _HomeScreenState extends State<HomeScreen> {
                                       width: 36,
                                       height: 36,
                                       decoration: BoxDecoration(
-                                        color: const Color(0xFF00C9A7)
-                                            .withValues(alpha: 0.15),
-                                        borderRadius:
-                                            BorderRadius.circular(10),
+                                        color: const Color(
+                                          0xFF00C9A7,
+                                        ).withValues(alpha: 0.15),
+                                        borderRadius: BorderRadius.circular(10),
                                       ),
                                       child: const Icon(
-                                          Icons.arrow_downward_rounded,
-                                          color: Color(0xFF00C9A7),
-                                          size: 18),
+                                        Icons.arrow_downward_rounded,
+                                        color: Color(0xFF00C9A7),
+                                        size: 18,
+                                      ),
                                     ),
                                     const SizedBox(width: 12),
                                     Expanded(
-                                      child: Text('Income',
-                                          style: GoogleFonts.poppins(
-                                              color: const Color(0xFF9E9E9E),
-                                              fontSize: 13)),
+                                      child: Text(
+                                        'Income',
+                                        style: GoogleFonts.poppins(
+                                          color: const Color(0xFF9E9E9E),
+                                          fontSize: 13,
+                                        ),
+                                      ),
                                     ),
                                     Text(
                                       'LKR ${formatCurrency(income)}',
                                       style: GoogleFonts.poppins(
-                                          color: const Color(0xFF00C9A7),
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w600),
+                                        color: const Color(0xFF00C9A7),
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w600,
+                                      ),
                                     ),
                                     const SizedBox(width: 4),
-                                    const Icon(Icons.edit_rounded,
-                                        color: Color(0xFF616161), size: 16),
+                                    const Icon(
+                                      Icons.edit_rounded,
+                                      color: Color(0xFF616161),
+                                      size: 16,
+                                    ),
                                   ],
                                 ),
                               ),
                               const SizedBox(height: 12),
 
-                              // Expenses row
                               Row(
                                 children: [
                                   Container(
                                     width: 36,
                                     height: 36,
                                     decoration: BoxDecoration(
-                                      color: const Color(0xFFCF6679)
-                                          .withValues(alpha: 0.15),
-                                      borderRadius:
-                                          BorderRadius.circular(10),
+                                      color: const Color(
+                                        0xFFCF6679,
+                                      ).withValues(alpha: 0.15),
+                                      borderRadius: BorderRadius.circular(10),
                                     ),
                                     child: const Icon(
-                                        Icons.arrow_upward_rounded,
-                                        color: Color(0xFFCF6679),
-                                        size: 18),
+                                      Icons.arrow_upward_rounded,
+                                      color: Color(0xFFCF6679),
+                                      size: 18,
+                                    ),
                                   ),
                                   const SizedBox(width: 12),
                                   Expanded(
-                                    child: Text('Expenses',
-                                        style: GoogleFonts.poppins(
-                                            color: const Color(0xFF9E9E9E),
-                                            fontSize: 13)),
+                                    child: Text(
+                                      'Expenses',
+                                      style: GoogleFonts.poppins(
+                                        color: const Color(0xFF9E9E9E),
+                                        fontSize: 13,
+                                      ),
+                                    ),
                                   ),
                                   Text(
                                     'LKR ${formatCurrency(totalThisMonth)}',
                                     style: GoogleFonts.poppins(
-                                        color: const Color(0xFFCF6679),
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.w600),
+                                      color: const Color(0xFFCF6679),
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w600,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -347,46 +412,52 @@ class _HomeScreenState extends State<HomeScreen> {
                               const Padding(
                                 padding: EdgeInsets.symmetric(vertical: 12),
                                 child: Divider(
-                                    color: Color(0xFF2C2C2C), height: 1),
+                                  color: Color(0xFF2C2C2C),
+                                  height: 1,
+                                ),
                               ),
 
-                              // Balance row
                               Row(
                                 children: [
                                   Container(
                                     width: 36,
                                     height: 36,
                                     decoration: BoxDecoration(
-                                      color: (balance >= 0
-                                              ? const Color(0xFF00C9A7)
-                                              : const Color(0xFFCF6679))
-                                          .withValues(alpha: 0.15),
-                                      borderRadius:
-                                          BorderRadius.circular(10),
+                                      color:
+                                          (balance >= 0
+                                                  ? const Color(0xFF00C9A7)
+                                                  : const Color(0xFFCF6679))
+                                              .withValues(alpha: 0.15),
+                                      borderRadius: BorderRadius.circular(10),
                                     ),
                                     child: Icon(
-                                        Icons.account_balance_wallet_rounded,
-                                        color: balance >= 0
-                                            ? const Color(0xFF00C9A7)
-                                            : const Color(0xFFCF6679),
-                                        size: 18),
+                                      Icons.account_balance_wallet_rounded,
+                                      color: balance >= 0
+                                          ? const Color(0xFF00C9A7)
+                                          : const Color(0xFFCF6679),
+                                      size: 18,
+                                    ),
                                   ),
                                   const SizedBox(width: 12),
                                   Expanded(
-                                    child: Text('Balance',
-                                        style: GoogleFonts.poppins(
-                                            color: Colors.white,
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w600)),
+                                    child: Text(
+                                      'Balance',
+                                      style: GoogleFonts.poppins(
+                                        color: Colors.white,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
                                   ),
                                   Text(
                                     'LKR ${formatCurrency(balance)}',
                                     style: GoogleFonts.poppins(
-                                        color: balance >= 0
-                                            ? const Color(0xFF00C9A7)
-                                            : const Color(0xFFCF6679),
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold),
+                                      color: balance >= 0
+                                          ? const Color(0xFF00C9A7)
+                                          : const Color(0xFFCF6679),
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -394,11 +465,15 @@ class _HomeScreenState extends State<HomeScreen> {
                               const SizedBox(height: 12),
                               Row(
                                 children: [
-                                  _miniStat(Icons.receipt_long_rounded,
-                                      '$expenseCount expenses'),
+                                  _miniStat(
+                                    Icons.receipt_long_rounded,
+                                    '$expenseCount expenses',
+                                  ),
                                   const SizedBox(width: 20),
-                                  _miniStat(Icons.calendar_today_rounded,
-                                      DateFormat('MMMM yyyy').format(now)),
+                                  _miniStat(
+                                    Icons.calendar_today_rounded,
+                                    DateFormat('MMMM yyyy').format(now),
+                                  ),
                                 ],
                               ),
                             ],
@@ -409,11 +484,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
 
-                // ── Spending Limit Alerts ──────────────────────
                 SliverToBoxAdapter(
                   child: StreamBuilder<List<Budget>>(
                     stream: _firestoreService.getBudgetsByMonth(
-                        userId, now.year, now.month),
+                      userId,
+                      now.year,
+                      now.month,
+                    ),
                     builder: (context, budgetSnap) {
                       final budgets = budgetSnap.data ?? [];
                       if (budgets.isEmpty) return const SizedBox.shrink();
@@ -424,28 +501,28 @@ class _HomeScreenState extends State<HomeScreen> {
                             (catSpend[e.category] ?? 0) + e.amount;
                       }
 
-                      final alerts = budgets.where((b) {
-                        final spent = b.category == 'Overall'
-                            ? totalThisMonth
-                            : (catSpend[b.category] ?? 0);
-                        return b.limitAmount > 0 &&
-                            spent / b.limitAmount >= 0.8;
-                      }).toList()
-                        ..sort((a, b) {
-                          final sa = a.category == 'Overall'
-                              ? totalThisMonth
-                              : (catSpend[a.category] ?? 0);
-                          final sb = b.category == 'Overall'
-                              ? totalThisMonth
-                              : (catSpend[b.category] ?? 0);
-                          final pa = a.limitAmount > 0
-                              ? sa / a.limitAmount
-                              : 0.0;
-                          final pb = b.limitAmount > 0
-                              ? sb / b.limitAmount
-                              : 0.0;
-                          return pb.compareTo(pa);
-                        });
+                      final alerts =
+                          budgets.where((b) {
+                            final spent = b.category == 'Overall'
+                                ? totalThisMonth
+                                : (catSpend[b.category] ?? 0);
+                            return b.limitAmount > 0 &&
+                                spent / b.limitAmount >= 0.8;
+                          }).toList()..sort((a, b) {
+                            final sa = a.category == 'Overall'
+                                ? totalThisMonth
+                                : (catSpend[a.category] ?? 0);
+                            final sb = b.category == 'Overall'
+                                ? totalThisMonth
+                                : (catSpend[b.category] ?? 0);
+                            final pa = a.limitAmount > 0
+                                ? sa / a.limitAmount
+                                : 0.0;
+                            final pb = b.limitAmount > 0
+                                ? sb / b.limitAmount
+                                : 0.0;
+                            return pb.compareTo(pa);
+                          });
 
                       if (alerts.isEmpty) return const SizedBox.shrink();
 
@@ -465,34 +542,35 @@ class _HomeScreenState extends State<HomeScreen> {
                                 onTap: () => Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (_) =>
-                                          const BudgetScreen()),
+                                    builder: (_) => const BudgetScreen(),
+                                  ),
                                 ),
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(
-                                      horizontal: 14, vertical: 12),
+                                    horizontal: 14,
+                                    vertical: 12,
+                                  ),
                                   decoration: BoxDecoration(
-                                    color: (isOver
-                                            ? const Color(0xFFCF6679)
-                                            : const Color(0xFFFFB74D))
-                                        .withValues(alpha: 0.12),
-                                    borderRadius:
-                                        BorderRadius.circular(14),
+                                    color:
+                                        (isOver
+                                                ? const Color(0xFFCF6679)
+                                                : const Color(0xFFFFB74D))
+                                            .withValues(alpha: 0.12),
+                                    borderRadius: BorderRadius.circular(14),
                                     border: Border.all(
-                                      color: (isOver
-                                              ? const Color(0xFFCF6679)
-                                              : const Color(0xFFFFB74D))
-                                          .withValues(alpha: 0.3),
+                                      color:
+                                          (isOver
+                                                  ? const Color(0xFFCF6679)
+                                                  : const Color(0xFFFFB74D))
+                                              .withValues(alpha: 0.3),
                                     ),
                                   ),
                                   child: Row(
                                     children: [
                                       Icon(
                                         isOver
-                                            ? Icons
-                                                .error_rounded
-                                            : Icons
-                                                .warning_rounded,
+                                            ? Icons.error_rounded
+                                            : Icons.warning_rounded,
                                         color: isOver
                                             ? const Color(0xFFCF6679)
                                             : const Color(0xFFFFB74D),
@@ -532,13 +610,15 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
 
-                // View Insights Button
                 SliverToBoxAdapter(
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(20, 14, 20, 0),
                     child: StreamBuilder<double>(
                       stream: _firestoreService.streamMonthlyIncome(
-                          userId, now.year, now.month),
+                        userId,
+                        now.year,
+                        now.month,
+                      ),
                       builder: (context, incSnap) {
                         final inc = incSnap.data ?? 0;
                         return Material(
@@ -560,31 +640,35 @@ class _HomeScreenState extends State<HomeScreen> {
                             borderRadius: BorderRadius.circular(14),
                             child: Padding(
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: 16, vertical: 14),
+                                horizontal: 16,
+                                vertical: 14,
+                              ),
                               child: Row(
                                 children: [
                                   Container(
                                     width: 36,
                                     height: 36,
                                     decoration: BoxDecoration(
-                                      color: const Color(0xFFFFE66D)
-                                          .withValues(alpha: 0.15),
-                                      borderRadius:
-                                          BorderRadius.circular(10),
+                                      color: const Color(
+                                        0xFFFFE66D,
+                                      ).withValues(alpha: 0.15),
+                                      borderRadius: BorderRadius.circular(10),
                                     ),
                                     child: const Icon(
-                                        Icons.lightbulb_rounded,
-                                        color: Color(0xFFFFE66D),
-                                        size: 18),
+                                      Icons.lightbulb_rounded,
+                                      color: Color(0xFFFFE66D),
+                                      size: 18,
+                                    ),
                                   ),
                                   const SizedBox(width: 12),
                                   Expanded(
                                     child: Text(
                                       'View Investment Insights',
                                       style: GoogleFonts.poppins(
-                                          color: Colors.white,
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w500),
+                                        color: Colors.white,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w500,
+                                      ),
                                     ),
                                   ),
                                   const Icon(
@@ -602,7 +686,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
 
-                // Recent Expenses Header
                 SliverToBoxAdapter(
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(20, 28, 20, 12),
@@ -620,14 +703,15 @@ class _HomeScreenState extends State<HomeScreen> {
                         Text(
                           '${allExpenses.length} total',
                           style: GoogleFonts.poppins(
-                              color: const Color(0xFF9E9E9E), fontSize: 12),
+                            color: const Color(0xFF9E9E9E),
+                            fontSize: 12,
+                          ),
                         ),
                       ],
                     ),
                   ),
                 ),
 
-                // Expense List
                 if (allExpenses.isEmpty)
                   SliverFillRemaining(
                     hasScrollBody: false,
@@ -635,134 +719,145 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Icon(Icons.receipt_long_rounded,
-                              size: 64, color: Color(0xFF2C2C2C)),
+                          const Icon(
+                            Icons.receipt_long_rounded,
+                            size: 64,
+                            color: Color(0xFF2C2C2C),
+                          ),
                           const SizedBox(height: 16),
-                          Text('No expenses yet',
-                              style: GoogleFonts.poppins(
-                                  color: const Color(0xFF9E9E9E),
-                                  fontSize: 16)),
+                          Text(
+                            'No expenses yet',
+                            style: GoogleFonts.poppins(
+                              color: const Color(0xFF9E9E9E),
+                              fontSize: 16,
+                            ),
+                          ),
                           const SizedBox(height: 4),
-                          Text('Tap + to add your first expense',
-                              style: GoogleFonts.poppins(
-                                  color: const Color(0xFF616161),
-                                  fontSize: 12)),
+                          Text(
+                            'Tap + to add your first expense',
+                            style: GoogleFonts.poppins(
+                              color: const Color(0xFF616161),
+                              fontSize: 12,
+                            ),
+                          ),
                         ],
                       ),
                     ),
                   )
                 else
                   SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                      (context, index) {
-                        final expense = allExpenses[index];
-                        final color = _categoryColors[expense.category] ??
-                            Colors.grey;
-                        final icon = _categoryIcons[expense.category] ??
-                            Icons.circle;
+                    delegate: SliverChildBuilderDelegate((context, index) {
+                      final expense = allExpenses[index];
+                      final color =
+                          _categoryColors[expense.category] ?? Colors.grey;
+                      final icon =
+                          _categoryIcons[expense.category] ?? Icons.circle;
 
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 5),
-                          child: Dismissible(
-                            key: Key(expense.id ?? index.toString()),
-                            direction: DismissDirection.endToStart,
-                            background: Container(
-                              alignment: Alignment.centerRight,
-                              padding: const EdgeInsets.only(right: 20),
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 5,
+                        ),
+                        child: Dismissible(
+                          key: Key(expense.id ?? index.toString()),
+                          direction: DismissDirection.endToStart,
+                          background: Container(
+                            alignment: Alignment.centerRight,
+                            padding: const EdgeInsets.only(right: 20),
+                            decoration: BoxDecoration(
+                              color: const Color(
+                                0xFFCF6679,
+                              ).withValues(alpha: 0.15),
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: const Icon(
+                              Icons.delete_rounded,
+                              color: Color(0xFFCF6679),
+                            ),
+                          ),
+                          confirmDismiss: (direction) async {
+                            if (expense.id != null) {
+                              _deleteExpense(expense.id!);
+                            }
+                            return false;
+                          },
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) =>
+                                      EditExpenseScreen(expense: expense),
+                                ),
+                              );
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.all(14),
                               decoration: BoxDecoration(
-                                color: const Color(0xFFCF6679)
-                                    .withValues(alpha: 0.15),
+                                color: const Color(0xFF1E1E1E),
                                 borderRadius: BorderRadius.circular(16),
                               ),
-                              child: const Icon(Icons.delete_rounded,
-                                  color: Color(0xFFCF6679)),
-                            ),
-                            confirmDismiss: (direction) async {
-                              if (expense.id != null) {
-                                _deleteExpense(expense.id!);
-                              }
-                              return false;
-                            },
-                            child: GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => EditExpenseScreen(
-                                        expense: expense),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: 44,
+                                    height: 44,
+                                    decoration: BoxDecoration(
+                                      color: color.withValues(alpha: 0.15),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: Icon(icon, color: color, size: 22),
                                   ),
-                                );
-                              },
-                              child: Container(
-                                padding: const EdgeInsets.all(14),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFF1E1E1E),
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                                child: Row(
-                                  children: [
-                                    Container(
-                                      width: 44,
-                                      height: 44,
-                                      decoration: BoxDecoration(
-                                        color: color.withValues(alpha: 0.15),
-                                        borderRadius:
-                                            BorderRadius.circular(12),
-                                      ),
-                                      child: Icon(icon,
-                                          color: color, size: 22),
-                                    ),
-                                    const SizedBox(width: 14),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            expense.description.isEmpty
-                                                ? expense.category
-                                                : expense.description,
-                                            style: GoogleFonts.poppins(
-                                                color: Colors.white,
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w500),
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
+                                  const SizedBox(width: 14),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          expense.description.isEmpty
+                                              ? expense.category
+                                              : expense.description,
+                                          style: GoogleFonts.poppins(
+                                            color: Colors.white,
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w500,
                                           ),
-                                          const SizedBox(height: 2),
-                                          Text(
-                                            '${expense.category} • ${DateFormat('MMM d').format(expense.date)}',
-                                            style: GoogleFonts.poppins(
-                                                color: const Color(0xFF9E9E9E),
-                                                fontSize: 11),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                        const SizedBox(height: 2),
+                                        Text(
+                                          '${expense.category} • ${DateFormat('MMM d').format(expense.date)}',
+                                          style: GoogleFonts.poppins(
+                                            color: const Color(0xFF9E9E9E),
+                                            fontSize: 11,
                                           ),
-                                        ],
-                                      ),
+                                        ),
+                                      ],
                                     ),
-                                    Text(
-                                      '-LKR ${formatCurrency(expense.amount)}',
-                                      style: GoogleFonts.poppins(
-                                        color: Colors.white,
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w600,
-                                      ),
+                                  ),
+                                  Text(
+                                    '-LKR ${formatCurrency(expense.amount)}',
+                                    style: GoogleFonts.poppins(
+                                      color: Colors.white,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
                                     ),
-                                    const SizedBox(width: 4),
-                                    const Icon(
-                                      Icons.chevron_right_rounded,
-                                      color: Color(0xFF616161),
-                                      size: 20,
-                                    ),
-                                  ],
-                                ),
+                                  ),
+                                  const SizedBox(width: 4),
+                                  const Icon(
+                                    Icons.chevron_right_rounded,
+                                    color: Color(0xFF616161),
+                                    size: 20,
+                                  ),
+                                ],
                               ),
                             ),
                           ),
-                        );
-                      },
-                      childCount: allExpenses.length,
-                    ),
+                        ),
+                      );
+                    }, childCount: allExpenses.length),
                   ),
 
                 const SliverToBoxAdapter(child: SizedBox(height: 100)),
@@ -791,9 +886,13 @@ class _HomeScreenState extends State<HomeScreen> {
       children: [
         Icon(icon, color: const Color(0xFF9E9E9E), size: 16),
         const SizedBox(width: 6),
-        Text(text,
-            style: GoogleFonts.poppins(
-                color: const Color(0xFF9E9E9E), fontSize: 12)),
+        Text(
+          text,
+          style: GoogleFonts.poppins(
+            color: const Color(0xFF9E9E9E),
+            fontSize: 12,
+          ),
+        ),
       ],
     );
   }

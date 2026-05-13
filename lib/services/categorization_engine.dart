@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:firebase_ai/firebase_ai.dart';
 
-/// Result of an AI or rule-based categorization.
 class CategorizationResult {
   final String category;
   final double confidence;
@@ -18,7 +17,6 @@ class CategorizationResult {
 class CategorizationEngine {
   static GenerativeModel? _model;
 
-  /// Lazily initialize the Gemini model
   static GenerativeModel get _geminiModel {
     _model ??= FirebaseAI.googleAI().generativeModel(
       model: 'gemini-2.5-flash-lite',
@@ -35,10 +33,6 @@ class CategorizationEngine {
     return _model!;
   }
 
-  // ─── AI-Powered Categorization ─────────────────────────────────────
-
-  /// Categorizes using Gemini AI with rule-based fallback.
-  /// Returns a [CategorizationResult] with category, confidence, and source.
   static Future<CategorizationResult> categorizeWithAI(String description) async {
     if (description.trim().isEmpty) {
       return const CategorizationResult(
@@ -59,13 +53,11 @@ class CategorizationEngine {
 
       final text = response.text?.trim() ?? '';
 
-      // Parse the JSON response from Gemini
       final result = _parseAIResponse(text);
       if (result != null) {
         return result;
       }
 
-      // If JSON parsing fails, try to extract category from plain text
       final extracted = _extractCategoryFromText(text);
       if (extracted != null) {
         return CategorizationResult(
@@ -75,10 +67,8 @@ class CategorizationEngine {
         );
       }
     } catch (_) {
-      // AI failed — fall through to rule-based fallback
     }
 
-    // Fallback to rule-based
     final fallbackCategory = categorize(description);
     return CategorizationResult(
       category: fallbackCategory,
@@ -87,7 +77,6 @@ class CategorizationEngine {
     );
   }
 
-  /// Parses the structured JSON response from Gemini.
   static CategorizationResult? _parseAIResponse(String text) {
     try {
       // Strip markdown code fences if present
@@ -104,7 +93,6 @@ class CategorizationEngine {
 
       if (category == null) return null;
 
-      // Validate it's one of our known categories
       final validCategory = _matchValidCategory(category);
       if (validCategory == null) return null;
 
@@ -118,7 +106,6 @@ class CategorizationEngine {
     }
   }
 
-  /// Attempts to match a Gemini response to a valid category (case-insensitive).
   static String? _matchValidCategory(String input) {
     final lower = input.toLowerCase().trim();
     for (final cat in categories) {
@@ -127,7 +114,6 @@ class CategorizationEngine {
     return null;
   }
 
-  /// Last-resort extraction: tries to find a category name in free text.
   static String? _extractCategoryFromText(String text) {
     final lower = text.toLowerCase();
     for (final cat in categories) {
@@ -138,12 +124,8 @@ class CategorizationEngine {
     return null;
   }
 
-  // ─── Rule-Based Fallback ───────────────────────────────────────────
 
-  /// Rule-based keyword matching algorithm (offline fallback).
-  /// Maps keywords to expense categories.
   static const Map<String, String> _keywordCategoryMap = {
-    // Food & Dining
     'restaurant': 'Food',
     'dinner': 'Food',
     'lunch': 'Food',
@@ -163,7 +145,6 @@ class CategorizationEngine {
     'takeaway': 'Food',
     'delivery': 'Food',
 
-    // Transport
     'uber': 'Transport',
     'taxi': 'Transport',
     'bus': 'Transport',
@@ -181,7 +162,6 @@ class CategorizationEngine {
     'transport': 'Transport',
     'commute': 'Transport',
 
-    // Entertainment
     'movie': 'Entertainment',
     'cinema': 'Entertainment',
     'netflix': 'Entertainment',
@@ -198,7 +178,6 @@ class CategorizationEngine {
     'fun': 'Entertainment',
     'entertainment': 'Entertainment',
 
-    // Utilities
     'electric': 'Utilities',
     'electricity': 'Utilities',
     'water': 'Utilities',
@@ -213,7 +192,6 @@ class CategorizationEngine {
     'rent': 'Utilities',
     'insurance': 'Utilities',
 
-    // Shopping
     'clothes': 'Shopping',
     'shoes': 'Shopping',
     'amazon': 'Shopping',
@@ -224,7 +202,6 @@ class CategorizationEngine {
     'purchase': 'Shopping',
     'buy': 'Shopping',
 
-    // Health
     'doctor': 'Health',
     'hospital': 'Health',
     'medicine': 'Health',
@@ -235,7 +212,6 @@ class CategorizationEngine {
     'medical': 'Health',
     'clinic': 'Health',
 
-    // Education
     'book': 'Education',
     'course': 'Education',
     'tuition': 'Education',
@@ -247,15 +223,6 @@ class CategorizationEngine {
     'tutorial': 'Education',
   };
 
-  /// Categorizes an expense description using keyword matching (synchronous).
-  /// Returns the matched category or "Other" if no match found.
-  ///
-  /// Algorithm:
-  /// 1. Convert description to lowercase
-  /// 2. Check each keyword against the description
-  /// 3. Return matching category or default "Other"
-  ///
-  /// Time Complexity: O(n) where n is the number of keywords
   static String categorize(String description) {
     if (description.trim().isEmpty) return 'Other';
 
@@ -270,7 +237,6 @@ class CategorizationEngine {
     return 'Other';
   }
 
-  /// Returns all available categories
   static List<String> get categories => [
         'Food',
         'Transport',
