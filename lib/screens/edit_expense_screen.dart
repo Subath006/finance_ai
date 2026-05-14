@@ -9,14 +9,10 @@ import '../utils/currency_formatter.dart';
 
 class EditExpenseScreen extends StatefulWidget {
   final Expense expense;
-  final bool isFromPending;
-  final String? pendingId;
 
   const EditExpenseScreen({
     super.key,
     required this.expense,
-    this.isFromPending = false,
-    this.pendingId,
   });
 
   @override
@@ -161,17 +157,7 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
         date: _selectedDate,
       );
 
-      if (widget.isFromPending && widget.pendingId != null) {
-        // We are approving a pending transaction
-        await _firestoreService.approvePendingTransaction(
-          user.uid,
-          widget.pendingId!,
-          updated,
-        );
-      } else {
-        // We are editing an existing expense
-        await _firestoreService.updateExpense(user.uid, updated);
-      }
+      await _firestoreService.updateExpense(user.uid, updated);
 
       if (mounted) Navigator.pop(context, true);
     } catch (e) {
@@ -195,7 +181,7 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
       backgroundColor: const Color(0xFF121212),
       appBar: AppBar(
         title: Text(
-          widget.isFromPending ? 'Approve Expense' : 'Edit Expense',
+          'Edit Expense',
           style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
         ),
         backgroundColor: const Color(0xFF121212),
@@ -496,9 +482,7 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
                           ),
                         )
                       : Text(
-                          widget.isFromPending
-                              ? 'Save Expense'
-                              : 'Update Expense',
+                          'Update Expense',
                           style: GoogleFonts.poppins(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,

@@ -406,8 +406,9 @@ class _SavingsGoalsScreenState extends State<SavingsGoalsScreen> {
   @override
   Widget build(BuildContext context) {
     final userId = _auth.currentUser?.uid;
-    if (userId == null)
+    if (userId == null) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
 
     return Scaffold(
       backgroundColor: const Color(0xFF121212),

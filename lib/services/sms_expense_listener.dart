@@ -2,7 +2,7 @@ import 'package:another_telephony/telephony.dart';
 import 'package:flutter/foundation.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-import '../models/pending_transaction.dart';
+import '../models/expense.dart';
 import 'firestore_service.dart';
 import 'receipt_scanner_service.dart';
 
@@ -38,6 +38,9 @@ class SmsExpenseListener {
   String? _userId;
 
   final ValueNotifier<int> pendingCount = ValueNotifier<int>(0);
+
+  final List<String> _smsQueue = [];
+  bool _isProcessingQueue = false;
 
   bool _isListening = false;
   bool get isListening => _isListening;
@@ -80,10 +83,28 @@ class SmsExpenseListener {
     debugPrint('SMS received from: $address');
 
     if (_isTransactionSms(body)) {
-      debugPrint('Transaction SMS detected! Processing...');
+      debugPrint('Transaction SMS detected! Adding to queue...');
       _processedIds.add(smsId);
-      _processTransactionSms(body);
+      _smsQueue.add(body);
+      _processQueue();
     }
+  }
+
+  Future<void> _processQueue() async {
+    if (_isProcessingQueue) return;
+    _isProcessingQueue = true;
+
+    // Yield to the event loop so the BroadcastReceiver can finish
+    await Future.delayed(const Duration(milliseconds: 500));
+
+    while (_smsQueue.isNotEmpty) {
+      final body = _smsQueue.removeAt(0);
+      await _processTransactionSms(body);
+      // Wait between processing to avoid API rate limits and UI lag
+      await Future.delayed(const Duration(seconds: 2));
+    }
+
+    _isProcessingQueue = false;
   }
 
   bool _isTransactionSms(String body) {
@@ -102,21 +123,18 @@ class SmsExpenseListener {
         return;
       }
 
-      final pending = PendingTransaction(
+      final expense = Expense(
         userId: _userId!,
         amount: result.amount,
-        vendor: result.vendor,
         category: result.category ?? 'Other',
-        cardLast4: result.cardLast4,
-        rawSms: result.rawSms,
-        detectedAt: DateTime.now(),
+        description: result.vendor ?? 'SMS Expense',
+        date: DateTime.now(),
       );
 
-      await _firestoreService.addPendingTransaction(_userId!, pending);
-      pendingCount.value++;
+      await _firestoreService.addExpense(_userId!, expense);
 
       debugPrint(
-        'Pending transaction saved: ${result.amount} at ${result.vendor ?? "unknown"}',
+        'Expense automatically saved from SMS: ${result.amount} at ${result.vendor ?? "unknown"}',
       );
     } catch (e) {
       debugPrint('Error processing transaction SMS: $e');

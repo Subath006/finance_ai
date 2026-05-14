@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/expense.dart';
 import '../models/budget.dart';
 import '../models/savings_goal.dart';
-import '../models/pending_transaction.dart';
 
 class FirestoreService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
@@ -164,44 +163,5 @@ class FirestoreService {
     });
   }
 
-  CollectionReference<Map<String, dynamic>> _userPending(String userId) {
-    return _db
-        .collection('users')
-        .doc(userId)
-        .collection('pendingTransactions');
-  }
 
-  Future<void> addPendingTransaction(
-    String userId,
-    PendingTransaction tx,
-  ) async {
-    await _userPending(userId).add(tx.toMap());
-  }
-
-  Stream<List<PendingTransaction>> streamPendingTransactions(String userId) {
-    return _userPending(userId)
-        .where('status', isEqualTo: 'pending')
-        .orderBy('detectedAt', descending: true)
-        .snapshots()
-        .map((snapshot) {
-          return snapshot.docs
-              .map((doc) => PendingTransaction.fromMap(doc.id, doc.data()))
-              .toList();
-        });
-  }
-
-  Future<void> approvePendingTransaction(
-    String userId,
-    String txId,
-    Expense expense,
-  ) async {
-    // Add as a real expense
-    await addExpense(userId, expense);
-    // Mark pending as approved
-    await _userPending(userId).doc(txId).update({'status': 'approved'});
-  }
-
-  Future<void> dismissPendingTransaction(String userId, String txId) async {
-    await _userPending(userId).doc(txId).update({'status': 'dismissed'});
-  }
 }
