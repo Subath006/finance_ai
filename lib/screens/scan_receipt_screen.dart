@@ -18,7 +18,6 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen> {
   ReceiptAnalysisResult? _result;
   bool _isProcessing = false;
 
-  // Editable controllers — populated after scan
   final _amountController = TextEditingController();
   final _vendorController = TextEditingController();
   String _selectedCategory = 'Other';
@@ -68,9 +67,9 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen> {
 
       final result = await _scannerService.analyzeReceipt(file);
 
-      // Populate editable fields from scan result
-      _amountController.text =
-          result.amount != null ? formatCurrency(result.amount!) : '';
+      _amountController.text = result.amount != null
+          ? formatCurrency(result.amount!)
+          : '';
       _vendorController.text = result.vendor ?? '';
       _selectedCategory = result.category ?? 'Other';
       _detectedDate = result.date;
@@ -112,13 +111,14 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFF121212),
       appBar: AppBar(
-        title: Text('Scan Receipt',
-            style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
+        title: Text(
+          'Scan Receipt',
+          style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+        ),
         backgroundColor: const Color(0xFF121212),
         elevation: 0,
         leading: IconButton(
-          icon:
-              const Icon(Icons.arrow_back_ios_rounded, color: Colors.white70),
+          icon: const Icon(Icons.arrow_back_ios_rounded, color: Colors.white70),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -127,12 +127,13 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ── Source Picker ──
             if (_imageFile == null && !_isProcessing) ...[
               Text(
                 'Capture or select a receipt image to automatically extract expense details using AI.',
                 style: GoogleFonts.poppins(
-                    color: const Color(0xFF9E9E9E), fontSize: 14),
+                  color: const Color(0xFF9E9E9E),
+                  fontSize: 14,
+                ),
               ),
               const SizedBox(height: 32),
               SizedBox(
@@ -141,9 +142,13 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen> {
                 child: ElevatedButton.icon(
                   onPressed: () => _pickAndProcess(true),
                   icon: const Icon(Icons.camera_alt_rounded, size: 22),
-                  label: Text('Take Photo',
-                      style: GoogleFonts.poppins(
-                          fontSize: 15, fontWeight: FontWeight.w600)),
+                  label: Text(
+                    'Take Photo',
+                    style: GoogleFonts.poppins(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ),
               ),
               const SizedBox(height: 14),
@@ -153,21 +158,25 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen> {
                 child: ElevatedButton.icon(
                   onPressed: () => _pickAndProcess(false),
                   icon: const Icon(Icons.photo_library_rounded, size: 22),
-                  label: Text('Choose from Gallery',
-                      style: GoogleFonts.poppins(
-                          fontSize: 15, fontWeight: FontWeight.w600)),
+                  label: Text(
+                    'Choose from Gallery',
+                    style: GoogleFonts.poppins(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF1E1E1E),
                     foregroundColor: Colors.white,
                     elevation: 0,
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14)),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
                   ),
                 ),
               ),
             ],
 
-            // ── Processing ──
             if (_isProcessing) ...[
               const SizedBox(height: 60),
               Center(
@@ -177,37 +186,50 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen> {
                       width: 40,
                       height: 40,
                       child: CircularProgressIndicator(
-                          color: Color(0xFF845EF7), strokeWidth: 3),
+                        color: Color(0xFF845EF7),
+                        strokeWidth: 3,
+                      ),
                     ),
                     const SizedBox(height: 20),
-                    Text('AI is analyzing receipt...',
-                        style: GoogleFonts.poppins(
-                            color: const Color(0xFF845EF7),
-                            fontSize: 15,
-                            fontWeight: FontWeight.w500)),
+                    Text(
+                      'AI is analyzing receipt...',
+                      style: GoogleFonts.poppins(
+                        color: const Color(0xFF845EF7),
+                        fontSize: 15,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
                     const SizedBox(height: 6),
-                    Text('Extracting amount, vendor & category',
-                        style: GoogleFonts.poppins(
-                            color: const Color(0xFF9E9E9E), fontSize: 12)),
+                    Text(
+                      'Extracting amount, vendor & category',
+                      style: GoogleFonts.poppins(
+                        color: const Color(0xFF9E9E9E),
+                        fontSize: 12,
+                      ),
+                    ),
                   ],
                 ),
               ),
             ],
 
-            // ── Editable Results ──
             if (_imageFile != null && !_isProcessing && _result != null) ...[
               // Image preview
               ClipRRect(
                 borderRadius: BorderRadius.circular(16),
-                child: Image.file(_imageFile!,
-                    width: double.infinity, height: 200, fit: BoxFit.cover),
+                child: Image.file(
+                  _imageFile!,
+                  width: double.infinity,
+                  height: 200,
+                  fit: BoxFit.cover,
+                ),
               ),
               const SizedBox(height: 16),
 
-              // AI badge
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 5,
+                ),
                 decoration: BoxDecoration(
                   color: _result!.usedAI
                       ? const Color(0xFF845EF7).withValues(alpha: 0.1)
@@ -244,19 +266,23 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen> {
               ),
               const SizedBox(height: 20),
 
-              // Header with "Editable" badge
               Row(
                 children: [
                   Expanded(
-                    child: Text('Extracted Information',
-                        style: GoogleFonts.poppins(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600)),
+                    child: Text(
+                      'Extracted Information',
+                      style: GoogleFonts.poppins(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
                   Container(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 8, vertical: 4),
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: const Color(0xFFFFE66D).withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(8),
@@ -264,14 +290,20 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen> {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(Icons.edit_rounded,
-                            color: Color(0xFFFFE66D), size: 12),
+                        const Icon(
+                          Icons.edit_rounded,
+                          color: Color(0xFFFFE66D),
+                          size: 12,
+                        ),
                         const SizedBox(width: 4),
-                        Text('Editable',
-                            style: GoogleFonts.poppins(
-                                color: const Color(0xFFFFE66D),
-                                fontSize: 10,
-                                fontWeight: FontWeight.w600)),
+                        Text(
+                          'Editable',
+                          style: GoogleFonts.poppins(
+                            color: const Color(0xFFFFE66D),
+                            fontSize: 10,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -279,69 +311,84 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen> {
               ),
               const SizedBox(height: 16),
 
-              // Amount
               _fieldLabel('Amount'),
               const SizedBox(height: 8),
               TextField(
                 controller: _amountController,
-                keyboardType:
-                    const TextInputType.numberWithOptions(decimal: true),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
                 inputFormatters: [CurrencyInputFormatter()],
                 style: GoogleFonts.poppins(
-                    color: Colors.white,
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold),
+                  color: Colors.white,
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                ),
                 decoration: InputDecoration(
                   prefixText: 'LKR ',
                   prefixStyle: GoogleFonts.poppins(
-                      color: const Color(0xFF00C9A7),
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold),
+                    color: const Color(0xFF00C9A7),
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                  ),
                   hintText: '0.00',
-                  hintStyle:
-                      GoogleFonts.poppins(color: const Color(0xFF616161)),
+                  hintStyle: GoogleFonts.poppins(
+                    color: const Color(0xFF616161),
+                  ),
                   filled: true,
                   fillColor: const Color(0xFF1E1E1E),
                   border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(14),
-                      borderSide: BorderSide.none),
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: BorderSide.none,
+                  ),
                   focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(14),
-                      borderSide: const BorderSide(
-                          color: Color(0xFF00C9A7), width: 1.5)),
-                  suffixIcon: const Icon(Icons.edit_rounded,
-                      color: Color(0xFF616161), size: 18),
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: const BorderSide(
+                      color: Color(0xFF00C9A7),
+                      width: 1.5,
+                    ),
+                  ),
+                  suffixIcon: const Icon(
+                    Icons.edit_rounded,
+                    color: Color(0xFF616161),
+                    size: 18,
+                  ),
                 ),
               ),
               const SizedBox(height: 20),
 
-              // Vendor / Description
               _fieldLabel('Vendor / Description'),
               const SizedBox(height: 8),
               TextField(
                 controller: _vendorController,
-                style:
-                    GoogleFonts.poppins(color: Colors.white, fontSize: 15),
+                style: GoogleFonts.poppins(color: Colors.white, fontSize: 15),
                 decoration: InputDecoration(
                   hintText: 'e.g. Keells Super',
-                  hintStyle:
-                      GoogleFonts.poppins(color: const Color(0xFF616161)),
+                  hintStyle: GoogleFonts.poppins(
+                    color: const Color(0xFF616161),
+                  ),
                   filled: true,
                   fillColor: const Color(0xFF1E1E1E),
                   border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(14),
-                      borderSide: BorderSide.none),
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: BorderSide.none,
+                  ),
                   focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(14),
-                      borderSide: const BorderSide(
-                          color: Color(0xFF00C9A7), width: 1.5)),
-                  suffixIcon: const Icon(Icons.edit_rounded,
-                      color: Color(0xFF616161), size: 18),
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: const BorderSide(
+                      color: Color(0xFF00C9A7),
+                      width: 1.5,
+                    ),
+                  ),
+                  suffixIcon: const Icon(
+                    Icons.edit_rounded,
+                    color: Color(0xFF616161),
+                    size: 18,
+                  ),
                 ),
               ),
               const SizedBox(height: 20),
 
-              // Category chips
               _fieldLabel('Category'),
               const SizedBox(height: 10),
               SizedBox(
@@ -355,12 +402,13 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen> {
                     final cat = _categories[i];
                     final isSelected = cat == _selectedCategory;
                     return GestureDetector(
-                      onTap: () =>
-                          setState(() => _selectedCategory = cat),
+                      onTap: () => setState(() => _selectedCategory = cat),
                       child: AnimatedContainer(
                         duration: const Duration(milliseconds: 200),
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 14, vertical: 10),
+                          horizontal: 14,
+                          vertical: 10,
+                        ),
                         decoration: BoxDecoration(
                           color: isSelected
                               ? const Color(0xFF00C9A7)
@@ -369,21 +417,26 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen> {
                         ),
                         child: Row(
                           children: [
-                            Icon(_categoryIcons[cat] ?? Icons.circle,
-                                size: 16,
+                            Icon(
+                              _categoryIcons[cat] ?? Icons.circle,
+                              size: 16,
+                              color: isSelected
+                                  ? Colors.white
+                                  : const Color(0xFF9E9E9E),
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              cat,
+                              style: GoogleFonts.poppins(
                                 color: isSelected
                                     ? Colors.white
-                                    : const Color(0xFF9E9E9E)),
-                            const SizedBox(width: 6),
-                            Text(cat,
-                                style: GoogleFonts.poppins(
-                                    color: isSelected
-                                        ? Colors.white
-                                        : const Color(0xFF9E9E9E),
-                                    fontSize: 13,
-                                    fontWeight: isSelected
-                                        ? FontWeight.w600
-                                        : FontWeight.w400)),
+                                    : const Color(0xFF9E9E9E),
+                                fontSize: 13,
+                                fontWeight: isSelected
+                                    ? FontWeight.w600
+                                    : FontWeight.w400,
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -392,7 +445,6 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen> {
                 ),
               ),
 
-              // Date (read-only display)
               if (_detectedDate != null) ...[
                 const SizedBox(height: 20),
                 _fieldLabel('Date (detected)'),
@@ -400,30 +452,42 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen> {
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 16, vertical: 14),
+                    horizontal: 16,
+                    vertical: 14,
+                  ),
                   decoration: BoxDecoration(
                     color: const Color(0xFF1E1E1E),
                     borderRadius: BorderRadius.circular(14),
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.calendar_today_rounded,
-                          color: Color(0xFF9E9E9E), size: 18),
+                      const Icon(
+                        Icons.calendar_today_rounded,
+                        color: Color(0xFF9E9E9E),
+                        size: 18,
+                      ),
                       const SizedBox(width: 12),
-                      Text(_detectedDate!,
-                          style: GoogleFonts.poppins(
-                              color: Colors.white, fontSize: 14)),
+                      Text(
+                        _detectedDate!,
+                        style: GoogleFonts.poppins(
+                          color: Colors.white,
+                          fontSize: 14,
+                        ),
+                      ),
                     ],
                   ),
                 ),
               ],
 
-              // Raw text (collapsible)
               const SizedBox(height: 16),
               ExpansionTile(
-                title: Text('Raw Extracted Text',
-                    style: GoogleFonts.poppins(
-                        color: const Color(0xFF9E9E9E), fontSize: 13)),
+                title: Text(
+                  'Raw Extracted Text',
+                  style: GoogleFonts.poppins(
+                    color: const Color(0xFF9E9E9E),
+                    fontSize: 13,
+                  ),
+                ),
                 collapsedIconColor: const Color(0xFF9E9E9E),
                 iconColor: const Color(0xFF00C9A7),
                 children: [
@@ -439,28 +503,32 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen> {
                           ? 'No text extracted'
                           : _result!.rawText,
                       style: GoogleFonts.poppins(
-                          color: const Color(0xFF9E9E9E), fontSize: 12),
+                        color: const Color(0xFF9E9E9E),
+                        fontSize: 12,
+                      ),
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: 24),
 
-              // Add as Expense
               SizedBox(
                 width: double.infinity,
                 height: 52,
                 child: ElevatedButton.icon(
                   onPressed: _addAsExpense,
                   icon: const Icon(Icons.add_rounded, size: 22),
-                  label: Text('Add as Expense',
-                      style: GoogleFonts.poppins(
-                          fontSize: 15, fontWeight: FontWeight.w600)),
+                  label: Text(
+                    'Add as Expense',
+                    style: GoogleFonts.poppins(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ),
               ),
               const SizedBox(height: 12),
 
-              // Scan Another
               SizedBox(
                 width: double.infinity,
                 height: 52,
@@ -476,15 +544,20 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen> {
                     });
                   },
                   icon: const Icon(Icons.refresh_rounded, size: 22),
-                  label: Text('Scan Another',
-                      style: GoogleFonts.poppins(
-                          fontSize: 15, fontWeight: FontWeight.w600)),
+                  label: Text(
+                    'Scan Another',
+                    style: GoogleFonts.poppins(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF1E1E1E),
                     foregroundColor: Colors.white,
                     elevation: 0,
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14)),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
                   ),
                 ),
               ),

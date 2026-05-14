@@ -73,7 +73,6 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
   }
 
   void _onDescriptionChanged() {
-    // Debounce AI calls — wait 600ms after user stops typing
     _debounce?.cancel();
     final text = _descriptionController.text.trim();
 
@@ -114,7 +113,6 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
         _isCategorizing = false;
       });
     } catch (_) {
-      // Fallback to rule-based if anything goes wrong
       if (!mounted) return;
       final fallback = CategorizationEngine.categorize(text);
       setState(() {
@@ -143,7 +141,8 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
               onSurface: Colors.white,
             ),
             dialogTheme: const DialogThemeData(
-                backgroundColor: Color(0xFF121212)),
+              backgroundColor: Color(0xFF121212),
+            ),
           ),
           child: child!,
         );
@@ -194,13 +193,14 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFF121212),
       appBar: AppBar(
-        title: Text('Add Expense',
-            style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
+        title: Text(
+          'Add Expense',
+          style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+        ),
         backgroundColor: const Color(0xFF121212),
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_rounded,
-              color: Colors.white70),
+          icon: const Icon(Icons.arrow_back_ios_rounded, color: Colors.white70),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -212,28 +212,36 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Amount
-              Text('Amount',
-                  style: GoogleFonts.poppins(
-                      color: const Color(0xFF9E9E9E), fontSize: 13)),
+              Text(
+                'Amount',
+                style: GoogleFonts.poppins(
+                  color: const Color(0xFF9E9E9E),
+                  fontSize: 13,
+                ),
+              ),
               const SizedBox(height: 8),
               TextFormField(
                 controller: _amountController,
-                keyboardType:
-                    const TextInputType.numberWithOptions(decimal: true),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
                 inputFormatters: [CurrencyInputFormatter()],
                 style: GoogleFonts.poppins(
-                    color: Colors.white,
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold),
+                  color: Colors.white,
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                ),
                 decoration: InputDecoration(
                   prefixText: 'LKR ',
                   prefixStyle: GoogleFonts.poppins(
-                      color: const Color(0xFF00C9A7),
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold),
+                    color: const Color(0xFF00C9A7),
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                  ),
                   hintText: '0.00',
                   hintStyle: GoogleFonts.poppins(
-                      color: const Color(0xFF616161)),
+                    color: const Color(0xFF616161),
+                  ),
                   filled: true,
                   fillColor: const Color(0xFF1E1E1E),
                   border: OutlineInputBorder(
@@ -243,7 +251,9 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(16),
                     borderSide: const BorderSide(
-                        color: Color(0xFF00C9A7), width: 1.5),
+                      color: Color(0xFF00C9A7),
+                      width: 1.5,
+                    ),
                   ),
                 ),
                 validator: (val) {
@@ -260,10 +270,13 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
               ),
               const SizedBox(height: 28),
 
-              // Description
-              Text('Description',
-                  style: GoogleFonts.poppins(
-                      color: const Color(0xFF9E9E9E), fontSize: 13)),
+              Text(
+                'Description',
+                style: GoogleFonts.poppins(
+                  color: const Color(0xFF9E9E9E),
+                  fontSize: 13,
+                ),
+              ),
               const SizedBox(height: 8),
               TextFormField(
                 controller: _descriptionController,
@@ -271,7 +284,8 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                 decoration: InputDecoration(
                   hintText: 'e.g. Uber ride to office',
                   hintStyle: GoogleFonts.poppins(
-                      color: const Color(0xFF616161)),
+                    color: const Color(0xFF616161),
+                  ),
                   filled: true,
                   fillColor: const Color(0xFF1E1E1E),
                   border: OutlineInputBorder(
@@ -281,7 +295,9 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
                     borderSide: const BorderSide(
-                        color: Color(0xFF00C9A7), width: 1.5),
+                      color: Color(0xFF00C9A7),
+                      width: 1.5,
+                    ),
                   ),
                 ),
                 validator: (val) {
@@ -292,7 +308,6 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                 },
               ),
 
-              // AI categorization status
               if (_isCategorizing) ...[
                 const SizedBox(height: 8),
                 Row(
@@ -303,7 +318,9 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                       child: CircularProgressIndicator(
                         strokeWidth: 1.5,
                         color: const Color(0xFF845EF7),
-                        backgroundColor: const Color(0xFF845EF7).withValues(alpha: 0.2),
+                        backgroundColor: const Color(
+                          0xFF845EF7,
+                        ).withValues(alpha: 0.2),
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -321,8 +338,10 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
               if (_autoCategorized && !_isCategorizing) ...[
                 const SizedBox(height: 8),
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: _isAI
                         ? const Color(0xFF845EF7).withValues(alpha: 0.1)
@@ -358,10 +377,13 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
               ],
               const SizedBox(height: 28),
 
-              // Category
-              Text('Category',
-                  style: GoogleFonts.poppins(
-                      color: const Color(0xFF9E9E9E), fontSize: 13)),
+              Text(
+                'Category',
+                style: GoogleFonts.poppins(
+                  color: const Color(0xFF9E9E9E),
+                  fontSize: 13,
+                ),
+              ),
               const SizedBox(height: 12),
               Wrap(
                 spacing: 10,
@@ -376,7 +398,9 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 200),
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 10),
+                        horizontal: 16,
+                        vertical: 10,
+                      ),
                       decoration: BoxDecoration(
                         color: isSelected
                             ? const Color(0xFF00C9A7)
@@ -389,15 +413,17 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                           Icon(
                             _categoryIcons[cat] ?? Icons.circle,
                             size: 16,
-                            color:
-                                isSelected ? Colors.white : const Color(0xFF9E9E9E),
+                            color: isSelected
+                                ? Colors.white
+                                : const Color(0xFF9E9E9E),
                           ),
                           const SizedBox(width: 6),
                           Text(
                             cat,
                             style: GoogleFonts.poppins(
-                              color:
-                                  isSelected ? Colors.white : const Color(0xFF9E9E9E),
+                              color: isSelected
+                                  ? Colors.white
+                                  : const Color(0xFF9E9E9E),
                               fontSize: 13,
                               fontWeight: isSelected
                                   ? FontWeight.w600
@@ -412,30 +438,40 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
               ),
               const SizedBox(height: 28),
 
-              // Date
-              Text('Date',
-                  style: GoogleFonts.poppins(
-                      color: const Color(0xFF9E9E9E), fontSize: 13)),
+              Text(
+                'Date',
+                style: GoogleFonts.poppins(
+                  color: const Color(0xFF9E9E9E),
+                  fontSize: 13,
+                ),
+              ),
               const SizedBox(height: 8),
               GestureDetector(
                 onTap: _pickDate,
                 child: Container(
                   width: double.infinity,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 16,
+                  ),
                   decoration: BoxDecoration(
                     color: const Color(0xFF1E1E1E),
                     borderRadius: BorderRadius.circular(14),
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.calendar_today_rounded,
-                          color: Color(0xFF9E9E9E), size: 20),
+                      const Icon(
+                        Icons.calendar_today_rounded,
+                        color: Color(0xFF9E9E9E),
+                        size: 20,
+                      ),
                       const SizedBox(width: 12),
                       Text(
                         DateFormat('EEEE, MMM d, y').format(_selectedDate),
                         style: GoogleFonts.poppins(
-                            color: Colors.white, fontSize: 14),
+                          color: Colors.white,
+                          fontSize: 14,
+                        ),
                       ),
                     ],
                   ),
@@ -443,7 +479,6 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
               ),
               const SizedBox(height: 40),
 
-              // Save Button
               SizedBox(
                 width: double.infinity,
                 height: 52,
