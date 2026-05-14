@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 
-/// A single investment suggestion
 class InvestmentSuggestion {
   final IconData icon;
   final String title;
   final String description;
-  final String riskLevel; // 'Low', 'Medium', 'High'
+  final String riskLevel;
   final Color riskColor;
 
   const InvestmentSuggestion({
@@ -17,7 +16,6 @@ class InvestmentSuggestion {
   });
 }
 
-/// A financial tip
 class FinancialTip {
   final IconData icon;
   final String title;
@@ -30,13 +28,11 @@ class FinancialTip {
   });
 }
 
-/// Generates investment suggestions and tips based on monthly savings.
 class InvestmentSuggestionsEngine {
   static const _green = Color(0xFF00C9A7);
   static const _yellow = Color(0xFFFFE66D);
   static const _red = Color(0xFFCF6679);
 
-  /// Returns suggestions based on the savings (income - expenses) amount.
   static List<InvestmentSuggestion> getSuggestions(double savings) {
     if (savings < 0) {
       return _overspendingSuggestions;
@@ -51,7 +47,6 @@ class InvestmentSuggestionsEngine {
     }
   }
 
-  /// Returns general financial tips relevant to the savings level.
   static List<FinancialTip> getTips(double savings) {
     final tips = <FinancialTip>[
       const FinancialTip(
@@ -111,8 +106,6 @@ class InvestmentSuggestionsEngine {
     return tips;
   }
 
-  // ── Tier: Overspending ──────────────────────────────────
-
   static const _overspendingSuggestions = [
     InvestmentSuggestion(
       icon: Icons.savings_rounded,
@@ -139,8 +132,6 @@ class InvestmentSuggestionsEngine {
       riskColor: _red,
     ),
   ];
-
-  // ── Tier: LKR 0 – 5,000 ───────────────────────────────
 
   static const _lowSavings = [
     InvestmentSuggestion(
@@ -169,8 +160,6 @@ class InvestmentSuggestionsEngine {
     ),
   ];
 
-  // ── Tier: LKR 5,000 – 25,000 ──────────────────────────
-
   static const _mediumSavings = [
     InvestmentSuggestion(
       icon: Icons.lock_clock_rounded,
@@ -197,8 +186,6 @@ class InvestmentSuggestionsEngine {
       riskColor: _green,
     ),
   ];
-
-  // ── Tier: LKR 25,000 – 100,000 ────────────────────────
 
   static const _highSavings = [
     InvestmentSuggestion(
@@ -234,8 +221,6 @@ class InvestmentSuggestionsEngine {
       riskColor: _green,
     ),
   ];
-
-  // ── Tier: LKR 100,000+ ────────────────────────────────
 
   static const _premiumSavings = [
     InvestmentSuggestion(

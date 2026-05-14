@@ -32,8 +32,10 @@ class InsightsScreen extends StatelessWidget {
                 child: Row(
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.arrow_back_rounded,
-                          color: Colors.white),
+                      icon: const Icon(
+                        Icons.arrow_back_rounded,
+                        color: Colors.white,
+                      ),
                       onPressed: () => Navigator.pop(context),
                     ),
                     const SizedBox(width: 4),
@@ -50,7 +52,6 @@ class InsightsScreen extends StatelessWidget {
               ),
             ),
 
-            // Savings Summary Card
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
@@ -66,10 +67,11 @@ class InsightsScreen extends StatelessWidget {
                         width: 56,
                         height: 56,
                         decoration: BoxDecoration(
-                          color: (savings >= 0
-                                  ? const Color(0xFF00C9A7)
-                                  : const Color(0xFFCF6679))
-                              .withValues(alpha: 0.15),
+                          color:
+                              (savings >= 0
+                                      ? const Color(0xFF00C9A7)
+                                      : const Color(0xFFCF6679))
+                                  .withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(16),
                         ),
                         child: Icon(
@@ -127,14 +129,16 @@ class InsightsScreen extends StatelessWidget {
               ),
             ),
 
-            // Suggestions Header
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 28, 20, 12),
                 child: Row(
                   children: [
-                    const Icon(Icons.lightbulb_rounded,
-                        color: Color(0xFFFFE66D), size: 20),
+                    const Icon(
+                      Icons.lightbulb_rounded,
+                      color: Color(0xFFFFE66D),
+                      size: 20,
+                    ),
                     const SizedBox(width: 8),
                     Text(
                       'Investment Suggestions',
@@ -149,97 +153,100 @@ class InsightsScreen extends StatelessWidget {
               ),
             ),
 
-            // Suggestion Cards
             SliverList(
-              delegate: SliverChildBuilderDelegate(
-                (context, index) {
-                  final s = suggestions[index];
-                  return Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-                    child: Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF1E1E1E),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            width: 44,
-                            height: 44,
-                            decoration: BoxDecoration(
-                              color: s.riskColor.withValues(alpha: 0.15),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Icon(s.icon, color: s.riskColor, size: 22),
-                          ),
-                          const SizedBox(width: 14),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child: Text(
-                                        s.title,
-                                        style: GoogleFonts.poppins(
-                                          color: Colors.white,
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                    ),
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 8, vertical: 3),
-                                      decoration: BoxDecoration(
-                                        color:
-                                            s.riskColor.withValues(alpha: 0.15),
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                      child: Text(
-                                        s.riskLevel,
-                                        style: GoogleFonts.poppins(
-                                          color: s.riskColor,
-                                          fontSize: 10,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 6),
-                                Text(
-                                  s.description,
-                                  style: GoogleFonts.poppins(
-                                    color: const Color(0xFF9E9E9E),
-                                    fontSize: 12,
-                                    height: 1.5,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
+              delegate: SliverChildBuilderDelegate((context, index) {
+                final s = suggestions[index];
+                return Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 5,
+                  ),
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF1E1E1E),
+                      borderRadius: BorderRadius.circular(16),
                     ),
-                  );
-                },
-                childCount: suggestions.length,
-              ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          width: 44,
+                          height: 44,
+                          decoration: BoxDecoration(
+                            color: s.riskColor.withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Icon(s.icon, color: s.riskColor, size: 22),
+                        ),
+                        const SizedBox(width: 14),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      s.title,
+                                      style: GoogleFonts.poppins(
+                                        color: Colors.white,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 3,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: s.riskColor.withValues(
+                                        alpha: 0.15,
+                                      ),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Text(
+                                      s.riskLevel,
+                                      style: GoogleFonts.poppins(
+                                        color: s.riskColor,
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 6),
+                              Text(
+                                s.description,
+                                style: GoogleFonts.poppins(
+                                  color: const Color(0xFF9E9E9E),
+                                  fontSize: 12,
+                                  height: 1.5,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }, childCount: suggestions.length),
             ),
 
-            // Tips Header
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 24, 20, 12),
                 child: Row(
                   children: [
-                    const Icon(Icons.tips_and_updates_rounded,
-                        color: Color(0xFF45B7D1), size: 20),
+                    const Icon(
+                      Icons.tips_and_updates_rounded,
+                      color: Color(0xFF45B7D1),
+                      size: 20,
+                    ),
                     const SizedBox(width: 8),
                     Text(
                       'Financial Tips',
@@ -254,66 +261,68 @@ class InsightsScreen extends StatelessWidget {
               ),
             ),
 
-            // Tip Cards
             SliverList(
-              delegate: SliverChildBuilderDelegate(
-                (context, index) {
-                  final tip = tips[index];
-                  return Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-                    child: Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF1E1E1E),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            width: 40,
-                            height: 40,
-                            decoration: BoxDecoration(
-                              color: const Color(0xFF45B7D1)
-                                  .withValues(alpha: 0.15),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Icon(tip.icon,
-                                color: const Color(0xFF45B7D1), size: 20),
-                          ),
-                          const SizedBox(width: 14),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  tip.title,
-                                  style: GoogleFonts.poppins(
-                                    color: Colors.white,
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  tip.description,
-                                  style: GoogleFonts.poppins(
-                                    color: const Color(0xFF9E9E9E),
-                                    fontSize: 12,
-                                    height: 1.5,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
+              delegate: SliverChildBuilderDelegate((context, index) {
+                final tip = tips[index];
+                return Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 5,
+                  ),
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF1E1E1E),
+                      borderRadius: BorderRadius.circular(16),
                     ),
-                  );
-                },
-                childCount: tips.length,
-              ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: const Color(
+                              0xFF45B7D1,
+                            ).withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Icon(
+                            tip.icon,
+                            color: const Color(0xFF45B7D1),
+                            size: 20,
+                          ),
+                        ),
+                        const SizedBox(width: 14),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                tip.title,
+                                style: GoogleFonts.poppins(
+                                  color: Colors.white,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                tip.description,
+                                style: GoogleFonts.poppins(
+                                  color: const Color(0xFF9E9E9E),
+                                  fontSize: 12,
+                                  height: 1.5,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }, childCount: tips.length),
             ),
 
             const SliverToBoxAdapter(child: SizedBox(height: 40)),
@@ -336,7 +345,9 @@ class InsightsScreen extends StatelessWidget {
           Text(
             label,
             style: GoogleFonts.poppins(
-                color: const Color(0xFF9E9E9E), fontSize: 11),
+              color: const Color(0xFF9E9E9E),
+              fontSize: 11,
+            ),
           ),
           const SizedBox(height: 2),
           Text(
