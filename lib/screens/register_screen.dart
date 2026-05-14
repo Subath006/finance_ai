@@ -69,8 +69,9 @@ class _RegisterScreenState extends State<RegisterScreen>
             content: Text(e.message ?? 'Registration failed'),
             backgroundColor: const Color(0xFFCF6679),
             behavior: SnackBarBehavior.floating,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
           ),
         );
       }
@@ -94,7 +95,6 @@ class _RegisterScreenState extends State<RegisterScreen>
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // Logo
                     Container(
                       width: 80,
                       height: 80,
@@ -128,15 +128,16 @@ class _RegisterScreenState extends State<RegisterScreen>
                     ),
                     const SizedBox(height: 40),
 
-                    // Email
                     TextFormField(
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
                       style: GoogleFonts.poppins(color: Colors.white),
                       decoration: const InputDecoration(
                         labelText: 'Email',
-                        prefixIcon: Icon(Icons.email_outlined,
-                            color: Color(0xFF9E9E9E)),
+                        prefixIcon: Icon(
+                          Icons.email_outlined,
+                          color: Color(0xFF9E9E9E),
+                        ),
                       ),
                       validator: (val) {
                         if (val == null || val.trim().isEmpty) {
@@ -148,15 +149,16 @@ class _RegisterScreenState extends State<RegisterScreen>
                     ),
                     const SizedBox(height: 18),
 
-                    // Password
                     TextFormField(
                       controller: _passwordController,
                       obscureText: _obscurePassword,
                       style: GoogleFonts.poppins(color: Colors.white),
                       decoration: InputDecoration(
                         labelText: 'Password',
-                        prefixIcon: const Icon(Icons.lock_outline,
-                            color: Color(0xFF9E9E9E)),
+                        prefixIcon: const Icon(
+                          Icons.lock_outline,
+                          color: Color(0xFF9E9E9E),
+                        ),
                         suffixIcon: IconButton(
                           icon: Icon(
                             _obscurePassword
@@ -166,7 +168,8 @@ class _RegisterScreenState extends State<RegisterScreen>
                           ),
                           onPressed: () {
                             setState(
-                                () => _obscurePassword = !_obscurePassword);
+                              () => _obscurePassword = !_obscurePassword,
+                            );
                           },
                         ),
                       ),
@@ -182,15 +185,16 @@ class _RegisterScreenState extends State<RegisterScreen>
                     ),
                     const SizedBox(height: 18),
 
-                    // Confirm Password
                     TextFormField(
                       controller: _confirmPasswordController,
                       obscureText: _obscureConfirm,
                       style: GoogleFonts.poppins(color: Colors.white),
                       decoration: InputDecoration(
                         labelText: 'Confirm Password',
-                        prefixIcon: const Icon(Icons.lock_outline,
-                            color: Color(0xFF9E9E9E)),
+                        prefixIcon: const Icon(
+                          Icons.lock_outline,
+                          color: Color(0xFF9E9E9E),
+                        ),
                         suffixIcon: IconButton(
                           icon: Icon(
                             _obscureConfirm
@@ -199,8 +203,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                             color: const Color(0xFF9E9E9E),
                           ),
                           onPressed: () {
-                            setState(
-                                () => _obscureConfirm = !_obscureConfirm);
+                            setState(() => _obscureConfirm = !_obscureConfirm);
                           },
                         ),
                       ),
@@ -213,7 +216,6 @@ class _RegisterScreenState extends State<RegisterScreen>
                     ),
                     const SizedBox(height: 32),
 
-                    // Register Button
                     SizedBox(
                       width: double.infinity,
                       height: 52,
@@ -240,7 +242,6 @@ class _RegisterScreenState extends State<RegisterScreen>
                     ),
                     const SizedBox(height: 24),
 
-                    // Back to Login
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [

@@ -27,7 +27,6 @@ class ProfileScreen extends StatelessWidget {
             children: [
               const SizedBox(height: 20),
 
-              // Avatar
               Container(
                 width: 80,
                 height: 80,
@@ -43,7 +42,6 @@ class ProfileScreen extends StatelessWidget {
               ),
               const SizedBox(height: 16),
 
-              // Email
               Text(
                 email,
                 style: GoogleFonts.poppins(
@@ -62,14 +60,15 @@ class ProfileScreen extends StatelessWidget {
               ),
               const SizedBox(height: 32),
 
-              // Stats
               if (userId != null)
                 StreamBuilder<List<Expense>>(
                   stream: firestoreService.getExpenses(userId),
                   builder: (context, snapshot) {
                     final expenses = snapshot.data ?? [];
                     final total = expenses.fold<double>(
-                        0, (sum, e) => sum + e.amount);
+                      0,
+                      (sum, e) => sum + e.amount,
+                    );
                     final categories = expenses
                         .map((e) => e.category)
                         .toSet()
@@ -114,7 +113,8 @@ class ProfileScreen extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (_) => const SavingsGoalsScreen()),
+                      builder: (_) => const SavingsGoalsScreen(),
+                    ),
                   );
                 },
               ),
@@ -142,7 +142,6 @@ class ProfileScreen extends StatelessWidget {
               ),
               const SizedBox(height: 16),
 
-              // Logout
               SizedBox(
                 width: double.infinity,
                 height: 52,
@@ -152,16 +151,19 @@ class ProfileScreen extends StatelessWidget {
                     if (context.mounted) {
                       Navigator.pushAndRemoveUntil(
                         context,
-                        MaterialPageRoute(
-                            builder: (_) => const LoginScreen()),
+                        MaterialPageRoute(builder: (_) => const LoginScreen()),
                         (route) => false,
                       );
                     }
                   },
                   icon: const Icon(Icons.logout_rounded, size: 20),
-                  label: Text('Logout',
-                      style: GoogleFonts.poppins(
-                          fontSize: 15, fontWeight: FontWeight.w600)),
+                  label: Text(
+                    'Logout',
+                    style: GoogleFonts.poppins(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF2C2C2C),
                     foregroundColor: const Color(0xFFCF6679),
@@ -183,8 +185,19 @@ class ProfileScreen extends StatelessWidget {
     if (user?.metadata?.creationTime != null) {
       final d = user!.metadata!.creationTime!;
       const months = [
-        '', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+        '',
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec',
       ];
       return '${months[d.month]} ${d.year}';
     }
@@ -241,8 +254,7 @@ class ProfileScreen extends StatelessWidget {
           onTap: onTap,
           borderRadius: BorderRadius.circular(14),
           child: Padding(
-            padding: const EdgeInsets.symmetric(
-                horizontal: 16, vertical: 14),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             child: Row(
               children: [
                 Icon(icon, color: const Color(0xFF9E9E9E), size: 22),
@@ -257,8 +269,11 @@ class ProfileScreen extends StatelessWidget {
                   ),
                 ),
                 trailing ??
-                    const Icon(Icons.chevron_right_rounded,
-                        color: Color(0xFF616161), size: 20),
+                    const Icon(
+                      Icons.chevron_right_rounded,
+                      color: Color(0xFF616161),
+                      size: 20,
+                    ),
               ],
             ),
           ),
