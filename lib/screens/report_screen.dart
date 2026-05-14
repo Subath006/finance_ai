@@ -67,34 +67,41 @@ class _ReportScreenState extends State<ReportScreen> {
             final allExpenses = snapshot.data ?? [];
 
             final monthExpenses = allExpenses
-                .where((e) =>
-                    e.date.month == _selectedMonth.month &&
-                    e.date.year == _selectedMonth.year)
+                .where(
+                  (e) =>
+                      e.date.month == _selectedMonth.month &&
+                      e.date.year == _selectedMonth.year,
+                )
                 .toList();
 
             if (monthExpenses.isEmpty) {
               return _buildEmptyState();
             }
 
-            final total =
-                monthExpenses.fold<double>(0, (sum, e) => sum + e.amount);
+            final total = monthExpenses.fold<double>(
+              0,
+              (sum, e) => sum + e.amount,
+            );
             final daysInMonth = DateTime(
-                    _selectedMonth.year, _selectedMonth.month + 1, 0)
-                .day;
+              _selectedMonth.year,
+              _selectedMonth.month + 1,
+              0,
+            ).day;
             final avgPerDay = total / daysInMonth;
 
-            // Category totals
             final catTotals = <String, double>{};
             for (final e in monthExpenses) {
-              catTotals[e.category] =
-                  (catTotals[e.category] ?? 0) + e.amount;
+              catTotals[e.category] = (catTotals[e.category] ?? 0) + e.amount;
             }
             final sortedCats = catTotals.entries.toList()
               ..sort((a, b) => b.value.compareTo(a.value));
 
             return StreamBuilder<double>(
               stream: _firestoreService.streamMonthlyIncome(
-                  userId, _selectedMonth.year, _selectedMonth.month),
+                userId,
+                _selectedMonth.year,
+                _selectedMonth.month,
+              ),
               builder: (context, incomeSnap) {
                 final income = incomeSnap.data ?? 0;
                 final balance = income - total;
@@ -105,52 +112,53 @@ class _ReportScreenState extends State<ReportScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Header
-                      Text('Statistics',
-                          style: GoogleFonts.poppins(
-                              color: Colors.white,
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold)),
+                      Text(
+                        'Statistics',
+                        style: GoogleFonts.poppins(
+                          color: Colors.white,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                       const SizedBox(height: 20),
 
-                      // Month Selector
                       _buildMonthSelector(),
                       const SizedBox(height: 20),
 
-                      // Income / Balance Row
                       Row(
                         children: [
                           Expanded(
-                              child: _statCard(
-                                  'Income',
-                                  'LKR ${formatCurrency(income)}',
-                                  Icons.arrow_downward_rounded,
-                                  const Color(0xFF00C9A7))),
+                            child: _statCard(
+                              'Income',
+                              'LKR ${formatCurrency(income)}',
+                              Icons.arrow_downward_rounded,
+                              const Color(0xFF00C9A7),
+                            ),
+                          ),
                           const SizedBox(width: 12),
                           Expanded(
-                              child: _statCard(
-                                  'Balance',
-                                  'LKR ${formatCurrency(balance)}',
-                                  Icons.account_balance_wallet_rounded,
-                                  balance >= 0
-                                      ? const Color(0xFF00C9A7)
-                                      : const Color(0xFFCF6679))),
+                            child: _statCard(
+                              'Balance',
+                              'LKR ${formatCurrency(balance)}',
+                              Icons.account_balance_wallet_rounded,
+                              balance >= 0
+                                  ? const Color(0xFF00C9A7)
+                                  : const Color(0xFFCF6679),
+                            ),
+                          ),
                         ],
                       ),
                       const SizedBox(height: 12),
 
-                      // Stats Row
                       _buildStatsRow(total, avgPerDay, monthExpenses.length),
                       const SizedBox(height: 24),
 
-                      // Pie Chart
                       _buildPieChart(catTotals, total),
                       const SizedBox(height: 24),
 
-                      // Bar Chart
                       _buildBarChart(monthExpenses),
                       const SizedBox(height: 24),
 
-                      // Category List
                       _buildCategoryList(sortedCats, total),
                       const SizedBox(height: 80),
                     ],
@@ -172,11 +180,14 @@ class _ReportScreenState extends State<ReportScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Statistics',
-                  style: GoogleFonts.poppins(
-                      color: Colors.white,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold)),
+              Text(
+                'Statistics',
+                style: GoogleFonts.poppins(
+                  color: Colors.white,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               const SizedBox(height: 20),
               _buildMonthSelector(),
             ],
@@ -187,12 +198,19 @@ class _ReportScreenState extends State<ReportScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.analytics_outlined,
-                    size: 64, color: Color(0xFF2C2C2C)),
+                const Icon(
+                  Icons.analytics_outlined,
+                  size: 64,
+                  color: Color(0xFF2C2C2C),
+                ),
                 const SizedBox(height: 16),
-                Text('No expenses this month',
-                    style: GoogleFonts.poppins(
-                        color: const Color(0xFF9E9E9E), fontSize: 16)),
+                Text(
+                  'No expenses this month',
+                  style: GoogleFonts.poppins(
+                    color: const Color(0xFF9E9E9E),
+                    fontSize: 16,
+                  ),
+                ),
               ],
             ),
           ),
@@ -212,20 +230,22 @@ class _ReportScreenState extends State<ReportScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           IconButton(
-            icon: const Icon(Icons.chevron_left_rounded,
-                color: Colors.white70),
+            icon: const Icon(Icons.chevron_left_rounded, color: Colors.white70),
             onPressed: () => _changeMonth(-1),
           ),
           Text(
             DateFormat('MMMM yyyy').format(_selectedMonth),
             style: GoogleFonts.poppins(
-                color: Colors.white,
-                fontSize: 15,
-                fontWeight: FontWeight.w600),
+              color: Colors.white,
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+            ),
           ),
           IconButton(
-            icon: const Icon(Icons.chevron_right_rounded,
-                color: Colors.white70),
+            icon: const Icon(
+              Icons.chevron_right_rounded,
+              color: Colors.white70,
+            ),
             onPressed: () => _changeMonth(1),
           ),
         ],
@@ -237,24 +257,36 @@ class _ReportScreenState extends State<ReportScreen> {
     return Row(
       children: [
         Expanded(
-            child: _statCard('Total Spent',
-                'LKR ${formatCurrency(total)}',
-                Icons.account_balance_wallet_rounded, const Color(0xFF00C9A7))),
+          child: _statCard(
+            'Total Spent',
+            'LKR ${formatCurrency(total)}',
+            Icons.account_balance_wallet_rounded,
+            const Color(0xFF00C9A7),
+          ),
+        ),
         const SizedBox(width: 12),
         Expanded(
-            child: _statCard('Avg/Day',
-                'LKR ${formatCurrency(avgPerDay)}',
-                Icons.trending_up_rounded, const Color(0xFF45B7D1))),
+          child: _statCard(
+            'Avg/Day',
+            'LKR ${formatCurrency(avgPerDay)}',
+            Icons.trending_up_rounded,
+            const Color(0xFF45B7D1),
+          ),
+        ),
         const SizedBox(width: 12),
         Expanded(
-            child: _statCard('Count', '$count',
-                Icons.receipt_long_rounded, const Color(0xFFFFE66D))),
+          child: _statCard(
+            'Count',
+            '$count',
+            Icons.receipt_long_rounded,
+            const Color(0xFFFFE66D),
+          ),
+        ),
       ],
     );
   }
 
-  Widget _statCard(
-      String label, String value, IconData icon, Color color) {
+  Widget _statCard(String label, String value, IconData icon, Color color) {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
@@ -272,17 +304,24 @@ class _ReportScreenState extends State<ReportScreen> {
             child: Icon(icon, color: color, size: 20),
           ),
           const SizedBox(height: 10),
-          Text(value,
-              style: GoogleFonts.poppins(
-                  color: Colors.white,
-                  fontSize: 13,
-                  fontWeight: FontWeight.bold),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis),
+          Text(
+            value,
+            style: GoogleFonts.poppins(
+              color: Colors.white,
+              fontSize: 13,
+              fontWeight: FontWeight.bold,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
           const SizedBox(height: 2),
-          Text(label,
-              style: GoogleFonts.poppins(
-                  color: const Color(0xFF9E9E9E), fontSize: 10)),
+          Text(
+            label,
+            style: GoogleFonts.poppins(
+              color: const Color(0xFF9E9E9E),
+              fontSize: 10,
+            ),
+          ),
         ],
       ),
     );
@@ -310,9 +349,10 @@ class _ReportScreenState extends State<ReportScreen> {
                 value: value,
                 title: '${pct.toStringAsFixed(0)}%',
                 titleStyle: GoogleFonts.poppins(
-                    color: Colors.white,
-                    fontSize: 11,
-                    fontWeight: FontWeight.bold),
+                  color: Colors.white,
+                  fontSize: 11,
+                  fontWeight: FontWeight.bold,
+                ),
                 radius: 50,
               );
             }),
@@ -327,8 +367,7 @@ class _ReportScreenState extends State<ReportScreen> {
   Widget _buildBarChart(List<Expense> expenses) {
     final dailyTotals = <int, double>{};
     for (final e in expenses) {
-      dailyTotals[e.date.day] =
-          (dailyTotals[e.date.day] ?? 0) + e.amount;
+      dailyTotals[e.date.day] = (dailyTotals[e.date.day] ?? 0) + e.amount;
     }
 
     final maxY = dailyTotals.values.isEmpty
@@ -350,17 +389,17 @@ class _ReportScreenState extends State<ReportScreen> {
               show: true,
               drawVerticalLine: false,
               horizontalInterval: maxY / 4,
-              getDrawingHorizontalLine: (value) => FlLine(
-                color: const Color(0xFF2C2C2C),
-                strokeWidth: 1,
-              ),
+              getDrawingHorizontalLine: (value) =>
+                  FlLine(color: const Color(0xFF2C2C2C), strokeWidth: 1),
             ),
             borderData: FlBorderData(show: false),
             titlesData: FlTitlesData(
-              topTitles:
-                  const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-              rightTitles:
-                  const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+              topTitles: const AxisTitles(
+                sideTitles: SideTitles(showTitles: false),
+              ),
+              rightTitles: const AxisTitles(
+                sideTitles: SideTitles(showTitles: false),
+              ),
               bottomTitles: AxisTitles(
                 sideTitles: SideTitles(
                   showTitles: true,
@@ -368,7 +407,9 @@ class _ReportScreenState extends State<ReportScreen> {
                     return Text(
                       '${value.toInt()}',
                       style: GoogleFonts.poppins(
-                          color: const Color(0xFF616161), fontSize: 10),
+                        color: const Color(0xFF616161),
+                        fontSize: 10,
+                      ),
                     );
                   },
                 ),
@@ -381,7 +422,9 @@ class _ReportScreenState extends State<ReportScreen> {
                     return Text(
                       'LKR ${value.toInt()}',
                       style: GoogleFonts.poppins(
-                          color: const Color(0xFF616161), fontSize: 10),
+                        color: const Color(0xFF616161),
+                        fontSize: 10,
+                      ),
                     );
                   },
                 ),
@@ -407,15 +450,20 @@ class _ReportScreenState extends State<ReportScreen> {
   }
 
   Widget _buildCategoryList(
-      List<MapEntry<String, double>> sortedCats, double total) {
+    List<MapEntry<String, double>> sortedCats,
+    double total,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('By Category',
-            style: GoogleFonts.poppins(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.w600)),
+        Text(
+          'By Category',
+          style: GoogleFonts.poppins(
+            color: Colors.white,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
         const SizedBox(height: 12),
         ...sortedCats.asMap().entries.map((mapEntry) {
           final idx = mapEntry.key;
@@ -448,9 +496,13 @@ class _ReportScreenState extends State<ReportScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(entry.key,
-                            style: GoogleFonts.poppins(
-                                color: Colors.white, fontSize: 13)),
+                        Text(
+                          entry.key,
+                          style: GoogleFonts.poppins(
+                            color: Colors.white,
+                            fontSize: 13,
+                          ),
+                        ),
                         const SizedBox(height: 4),
                         ClipRRect(
                           borderRadius: BorderRadius.circular(4),
@@ -465,11 +517,14 @@ class _ReportScreenState extends State<ReportScreen> {
                     ),
                   ),
                   const SizedBox(width: 12),
-                  Text('LKR ${formatCurrency(entry.value)}',
-                      style: GoogleFonts.poppins(
-                          color: Colors.white,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600)),
+                  Text(
+                    'LKR ${formatCurrency(entry.value)}',
+                    style: GoogleFonts.poppins(
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ],
               ),
             ),

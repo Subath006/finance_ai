@@ -49,10 +49,7 @@ class _LoginScreenState extends State<LoginScreen>
     if (!_formKey.currentState!.validate()) return;
     setState(() => _isLoading = true);
     try {
-      await _authService.login(
-        _emailController.text,
-        _passwordController.text,
-      );
+      await _authService.login(_emailController.text, _passwordController.text);
       if (mounted) {
         Navigator.pushAndRemoveUntil(
           context,
@@ -67,8 +64,9 @@ class _LoginScreenState extends State<LoginScreen>
             content: Text(e.message ?? 'Login failed'),
             backgroundColor: const Color(0xFFCF6679),
             behavior: SnackBarBehavior.floating,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
           ),
         );
       }
@@ -108,7 +106,6 @@ class _LoginScreenState extends State<LoginScreen>
                     ),
                     const SizedBox(height: 24),
 
-                    // Title
                     Text(
                       'Finance AI',
                       style: GoogleFonts.poppins(
@@ -127,15 +124,16 @@ class _LoginScreenState extends State<LoginScreen>
                     ),
                     const SizedBox(height: 48),
 
-                    // Email Field
                     TextFormField(
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
                       style: GoogleFonts.poppins(color: Colors.white),
                       decoration: InputDecoration(
                         labelText: 'Email',
-                        prefixIcon: const Icon(Icons.email_outlined,
-                            color: Color(0xFF9E9E9E)),
+                        prefixIcon: const Icon(
+                          Icons.email_outlined,
+                          color: Color(0xFF9E9E9E),
+                        ),
                       ),
                       validator: (val) {
                         if (val == null || val.trim().isEmpty) {
@@ -147,15 +145,16 @@ class _LoginScreenState extends State<LoginScreen>
                     ),
                     const SizedBox(height: 20),
 
-                    // Password Field
                     TextFormField(
                       controller: _passwordController,
                       obscureText: _obscurePassword,
                       style: GoogleFonts.poppins(color: Colors.white),
                       decoration: InputDecoration(
                         labelText: 'Password',
-                        prefixIcon: const Icon(Icons.lock_outline,
-                            color: Color(0xFF9E9E9E)),
+                        prefixIcon: const Icon(
+                          Icons.lock_outline,
+                          color: Color(0xFF9E9E9E),
+                        ),
                         suffixIcon: IconButton(
                           icon: Icon(
                             _obscurePassword
@@ -165,7 +164,8 @@ class _LoginScreenState extends State<LoginScreen>
                           ),
                           onPressed: () {
                             setState(
-                                () => _obscurePassword = !_obscurePassword);
+                              () => _obscurePassword = !_obscurePassword,
+                            );
                           },
                         ),
                       ),
@@ -181,7 +181,6 @@ class _LoginScreenState extends State<LoginScreen>
                     ),
                     const SizedBox(height: 32),
 
-                    // Login Button
                     SizedBox(
                       width: double.infinity,
                       height: 52,
@@ -208,7 +207,6 @@ class _LoginScreenState extends State<LoginScreen>
                     ),
                     const SizedBox(height: 24),
 
-                    // Register Link
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -224,7 +222,8 @@ class _LoginScreenState extends State<LoginScreen>
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (_) => const RegisterScreen()),
+                                builder: (_) => const RegisterScreen(),
+                              ),
                             );
                           },
                           child: Text(
